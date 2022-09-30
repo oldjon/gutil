@@ -1,4 +1,4 @@
-module oldjon.com/gutil
+module oldjon/gutil
 
 go 1.18
 
