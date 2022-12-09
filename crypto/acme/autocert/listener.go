@@ -113,7 +113,7 @@ func (ln *listener) Addr() net.Addr {
 		return ln.tcpListener.Addr()
 	}
 	// net.Listen failed. Return something non-nil in case callers
-	// call Addr before Accept:
+	// call Addr before accept:
 	return &net.TCPAddr{IP: net.IP{0, 0, 0, 0}, Port: 443}
 }
 

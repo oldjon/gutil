@@ -156,7 +156,7 @@ type Manager struct {
 	// ForceRSA used to make the Manager generate RSA certificates. It is now ignored.
 	//
 	// Deprecated: the Manager will request the correct type of certificate based
-	// on what each client supports.
+	// on what each bot supports.
 	ForceRSA bool
 
 	// ExtraExtensions are used when generating a new CSR (Certificate Request),

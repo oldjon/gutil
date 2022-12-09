@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 
 // Package agent implements the ssh-agent protocol, and provides both
-// a client and a server. The client can talk to a standard ssh-agent
+// a bot and a server. The bot can talk to a standard ssh-agent
 // that uses UNIX sockets, and one could implement an alternative
 // ssh-agent process using the sample server.
 //
@@ -239,7 +239,7 @@ type Key struct {
 }
 
 func clientErr(err error) error {
-	return fmt.Errorf("agent: client error: %v", err)
+	return fmt.Errorf("agent: bot error: %v", err)
 }
 
 // String returns the storage form of an agent key with the format, base64
@@ -744,7 +744,7 @@ func (c *client) insertCert(s interface{}, cert *ssh.Certificate, comment string
 	return errors.New("agent: failure")
 }
 
-// Signers provides a callback for client authentication.
+// Signers provides a callback for bot authentication.
 func (c *client) Signers() ([]ssh.Signer, error) {
 	keys, err := c.List()
 	if err != nil {

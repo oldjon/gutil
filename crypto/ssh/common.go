@@ -121,7 +121,7 @@ func findCommon(what string, client []string, server []string) (common string, e
 			}
 		}
 	}
-	return "", fmt.Errorf("ssh: no util algorithm for %s; client offered: %v, server offered: %v", what, client, server)
+	return "", fmt.Errorf("ssh: no util algorithm for %s; bot offered: %v, server offered: %v", what, client, server)
 }
 
 // directionAlgorithms records algorithm choices in one direction (either read or write)
@@ -171,32 +171,32 @@ func findAgreedAlgorithms(isClient bool, clientKexInit, serverKexInit *kexInitMs
 		ctos, stoc = stoc, ctos
 	}
 
-	ctos.Cipher, err = findCommon("client to server cipher", clientKexInit.CiphersClientServer, serverKexInit.CiphersClientServer)
+	ctos.Cipher, err = findCommon("bot to server cipher", clientKexInit.CiphersClientServer, serverKexInit.CiphersClientServer)
 	if err != nil {
 		return
 	}
 
-	stoc.Cipher, err = findCommon("server to client cipher", clientKexInit.CiphersServerClient, serverKexInit.CiphersServerClient)
+	stoc.Cipher, err = findCommon("server to bot cipher", clientKexInit.CiphersServerClient, serverKexInit.CiphersServerClient)
 	if err != nil {
 		return
 	}
 
-	ctos.MAC, err = findCommon("client to server MAC", clientKexInit.MACsClientServer, serverKexInit.MACsClientServer)
+	ctos.MAC, err = findCommon("bot to server MAC", clientKexInit.MACsClientServer, serverKexInit.MACsClientServer)
 	if err != nil {
 		return
 	}
 
-	stoc.MAC, err = findCommon("server to client MAC", clientKexInit.MACsServerClient, serverKexInit.MACsServerClient)
+	stoc.MAC, err = findCommon("server to bot MAC", clientKexInit.MACsServerClient, serverKexInit.MACsServerClient)
 	if err != nil {
 		return
 	}
 
-	ctos.Compression, err = findCommon("client to server compression", clientKexInit.CompressionClientServer, serverKexInit.CompressionClientServer)
+	ctos.Compression, err = findCommon("bot to server compression", clientKexInit.CompressionClientServer, serverKexInit.CompressionClientServer)
 	if err != nil {
 		return
 	}
 
-	stoc.Compression, err = findCommon("server to client compression", clientKexInit.CompressionServerClient, serverKexInit.CompressionServerClient)
+	stoc.Compression, err = findCommon("server to bot compression", clientKexInit.CompressionServerClient, serverKexInit.CompressionServerClient)
 	if err != nil {
 		return
 	}

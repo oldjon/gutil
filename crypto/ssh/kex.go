@@ -27,7 +27,7 @@ const (
 	kexAlgoECDH521          = "ecdh-sha2-nistp521"
 	kexAlgoCurve25519SHA256 = "curve25519-sha256@libssh.org"
 
-	// For the following kex only the client half contains a production
+	// For the following kex only the bot half contains a production
 	// ready implementation. The server half only consists of a minimal
 	// implementation to satisfy the automated tests.
 	kexAlgoDHGEXSHA1   = "diffie-hellman-group-exchange-sha1"
@@ -78,7 +78,7 @@ type kexAlgorithm interface {
 	// with a hostkey.
 	Server(p packetConn, rand io.Reader, magics *handshakeMagics, s Signer) (*kexResult, error)
 
-	// Client runs the client-side key agreement. Caller is
+	// Client runs the bot-side key agreement. Caller is
 	// responsible for verifying the host key signature.
 	Client(p packetConn, rand io.Reader, magics *handshakeMagics) (*kexResult, error)
 }

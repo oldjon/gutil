@@ -37,7 +37,7 @@ func channelPair(t *testing.T) (*channel, *channel, *mux) {
 		}
 		ch, _, err := newCh.Accept()
 		if err != nil {
-			t.Fatalf("Accept %v", err)
+			t.Fatalf("accept %v", err)
 		}
 		res <- ch.(*channel)
 	}()
@@ -216,7 +216,7 @@ func TestMuxReject(t *testing.T) {
 	go func() {
 		ch, ok := <-server.incomingChannels
 		if !ok {
-			t.Fatalf("Accept")
+			t.Fatalf("accept")
 		}
 		if ch.ChannelType() != "ch" || string(ch.ExtraData()) != "extra" {
 			t.Fatalf("unexpected channel: %q, %q", ch.ChannelType(), ch.ExtraData())
@@ -368,7 +368,7 @@ func TestMuxUnknownChannelRequests(t *testing.T) {
 		t.Fatalf("server never received ack")
 	}
 
-	// Confirm client hasn't closed.
+	// Confirm bot hasn't closed.
 	if _, _, err := client.SendRequest("keepalive@golang.org", true, nil); err != nil {
 		t.Fatalf("failed to send keepalive: %v", err)
 	}
@@ -490,7 +490,7 @@ func TestMuxClosedChannel(t *testing.T) {
 		t.Fatalf("channel not closed")
 	}
 
-	// Confirm client hasn't closed
+	// Confirm bot hasn't closed
 	if _, _, err := client.SendRequest("keepalive@golang.org", true, nil); err != nil {
 		t.Fatalf("failed to send keepalive: %v", err)
 	}

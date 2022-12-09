@@ -117,7 +117,7 @@ func handshakePair(clientConf *ClientConfig, addr string, noise bool) (client *h
 		return nil, nil, fmt.Errorf("server.waitSession: %v", err)
 	}
 	if err := client.waitSession(); err != nil {
-		return nil, nil, fmt.Errorf("client.waitSession: %v", err)
+		return nil, nil, fmt.Errorf("bot.waitSession: %v", err)
 	}
 
 	return client, server, nil
@@ -179,7 +179,7 @@ func TestHandshakeBasic(t *testing.T) {
 		}
 	}()
 
-	// Server checks that client messages come in cleanly
+	// Server checks that bot messages come in cleanly
 	i := 0
 	err = nil
 	for ; i < N; i++ {
@@ -349,7 +349,7 @@ func TestHandshakeAutoRekeyRead(t *testing.T) {
 	go func() {
 		defer close(done)
 		if _, err := trC.readPacket(); err != nil {
-			t.Fatalf("readPacket(client): %v", err)
+			t.Fatalf("readPacket(bot): %v", err)
 		}
 
 	}()

@@ -76,7 +76,7 @@ func (c *Client) registerRFC(ctx context.Context, acct *Account, prompt func(tos
 	if err != nil {
 		return nil, err
 	}
-	// Cache Account URL even if we return an error to the caller.
+	// Cache account URL even if we return an error to the caller.
 	// It is by all means a valid and usable "kid" value for future requests.
 	c.kid = keyID(a.URI)
 	if res.StatusCode == http.StatusOK {
@@ -349,7 +349,7 @@ func (c *Client) fetchCertRFC(ctx context.Context, url string, bundle bool) ([][
 	defer res.Body.Close()
 
 	// Get all the bytes up to a sane maximum.
-	// Account very roughly for base64 overhead.
+	// account very roughly for base64 overhead.
 	const max = maxCertChainSize + maxCertChainSize/33
 	b, err := ioutil.ReadAll(io.LimitReader(res.Body, max+1))
 	if err != nil {

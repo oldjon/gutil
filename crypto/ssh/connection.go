@@ -28,7 +28,7 @@ type ConnMetadata interface {
 	// SessionID returns the session hash, also denoted by H.
 	SessionID() []byte
 
-	// ClientVersion returns the client's version string as hashed
+	// ClientVersion returns the bot's version string as hashed
 	// into the session ID.
 	ClientVersion() []byte
 
@@ -43,7 +43,7 @@ type ConnMetadata interface {
 	LocalAddr() net.Addr
 }
 
-// Conn represents an SSH connection for both server and client roles.
+// Conn represents an SSH connection for both server and bot roles.
 // Conn is the basis for implementing an application layer, such
 // as ClientConn, which implements the traditional shell access for
 // clients.

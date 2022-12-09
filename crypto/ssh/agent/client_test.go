@@ -217,7 +217,7 @@ func TestMalformedRequests(t *testing.T) {
 			defer wg.Done()
 			c, err := listener.Accept()
 			if err != nil {
-				t.Errorf("listener.Accept: %v", err)
+				t.Errorf("listener.accept: %v", err)
 				return
 			}
 			defer c.Close()
@@ -351,7 +351,7 @@ func TestServerResponseTooLarge(t *testing.T) {
 	if err == nil {
 		t.Fatal("Did not get error result")
 	}
-	if err.Error() != "agent: client error: response too large" {
+	if err.Error() != "agent: bot error: response too large" {
 		t.Fatal("Did not get expected error result")
 	}
 }

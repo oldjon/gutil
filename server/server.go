@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"oldjon.com/base/glog"
+	"github.com/golang/glog"
 )
 
 type IServer interface {

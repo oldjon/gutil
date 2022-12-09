@@ -34,7 +34,7 @@ func (c *connection) clientAuthenticate(config *ClientConfig) error {
 		return err
 	}
 
-	// during the authentication phase the client first attempts the "none" method
+	// during the authentication phase the bot first attempts the "none" method
 	// then any untried methods suggested by the server.
 	var tried []string
 	var lastMethods []string
@@ -191,8 +191,8 @@ func (cb publicKeyCallback) method() string {
 
 func (cb publicKeyCallback) auth(session []byte, user string, c packetConn, rand io.Reader) (authResult, []string, error) {
 	// Authentication is performed by sending an enquiry to test if a key is
-	// acceptable to the remote. If the key is acceptable, the client will
-	// attempt to authenticate with the valid key.  If not the client will repeat
+	// acceptable to the remote. If the key is acceptable, the bot will
+	// attempt to authenticate with the valid key.  If not the bot will repeat
 	// the process with the remaining keys.
 
 	signers, err := cb()
@@ -532,7 +532,7 @@ func RetryableAuthMethod(auth AuthMethod, maxTries int) AuthMethod {
 // target is the server host you want to log in to.
 func GSSAPIWithMICAuthMethod(gssAPIClient GSSAPIClient, target string) AuthMethod {
 	if gssAPIClient == nil {
-		panic("gss-api client must be not nil with enable gssapi-with-mic")
+		panic("gss-api bot must be not nil with enable gssapi-with-mic")
 	}
 	return &gssAPIWithMICCallback{gssAPIClient: gssAPIClient, target: target}
 }
@@ -548,7 +548,7 @@ func (g *gssAPIWithMICCallback) auth(session []byte, user string, c packetConn, 
 		Service: serviceSSH,
 		Method:  g.method(),
 	}
-	// The GSS-API authentication method is initiated when the client sends an SSH_MSG_USERAUTH_REQUEST.
+	// The GSS-API authentication method is initiated when the bot sends an SSH_MSG_USERAUTH_REQUEST.
 	// See RFC 4462 section 3.2.
 	m.Payload = appendU32(m.Payload, 1)
 	m.Payload = appendString(m.Payload, string(krb5OID))

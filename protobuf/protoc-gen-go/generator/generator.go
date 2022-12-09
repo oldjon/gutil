@@ -2675,7 +2675,7 @@ func CamelCase(s string) string {
 			c ^= ' ' // Make it a capital letter.
 		}
 		t = append(t, c) // Guaranteed not lower case.
-		// Accept lower case sequence that follows.
+		// accept lower case sequence that follows.
 		for i+1 < len(s) && isASCIILower(s[i+1]) {
 			i++
 			t = append(t, s[i])

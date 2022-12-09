@@ -1,4 +1,4 @@
-package jwt
+package gjwt
 
 import (
 	"context"
@@ -99,6 +99,29 @@ func FromAuthHeader(r *http.Request) (string, error) {
 	}
 
 	return parts[1], nil
+}
+
+func (m *Middleware) CheckJWTTCP(token string) (jwt.Claims, error) {
+	claims := m.Options.NewClaimsFunc()
+	pToken, err := jwt.ParseWithClaims(token, claims, m.Options.KeyGetter)
+	if err != nil {
+		return nil, err
+	}
+
+	if m.Options.SigningMethod != nil {
+		eAlg := m.Options.SigningMethod.Alg()
+		gAlg := pToken.Header["alg"]
+		if eAlg != gAlg {
+			msg := fmt.Sprintf("expected %s signing method but token specificed %s", eAlg, gAlg)
+			return nil, errors.New(msg)
+		}
+	}
+
+	if !pToken.Valid {
+		return nil, errors.New("invalid token")
+	}
+
+	return claims, nil
 }
 
 type key string

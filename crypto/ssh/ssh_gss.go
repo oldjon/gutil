@@ -15,10 +15,10 @@ func init() {
 	krb5OID, _ = asn1.Marshal(krb5Mesh)
 }
 
-// GSSAPIClient provides the API to plug-in GSSAPI authentication for client logins.
+// GSSAPIClient provides the API to plug-in GSSAPI authentication for bot logins.
 type GSSAPIClient interface {
 	// InitSecContext initiates the establishment of a security context for GSS-API between the
-	// ssh client and ssh server. Initially the token parameter should be specified as nil.
+	// ssh bot and ssh server. Initially the token parameter should be specified as nil.
 	// The routine may return a outputToken which should be transferred to
 	// the ssh server, where the ssh server will present it to
 	// AcceptSecContext. If no token need be sent, InitSecContext will indicate this by setting
@@ -57,22 +57,22 @@ type GSSAPIClient interface {
 // GSSAPIServer provides the API to plug in GSSAPI authentication for server logins.
 type GSSAPIServer interface {
 	// AcceptSecContext allows a remotely initiated security context between the application
-	// and a remote peer to be established by the ssh client. The routine may return a
-	// outputToken which should be transferred to the ssh client,
-	// where the ssh client will present it to InitSecContext.
+	// and a remote peer to be established by the ssh bot. The routine may return a
+	// outputToken which should be transferred to the ssh bot,
+	// where the ssh bot will present it to InitSecContext.
 	// If no token need be sent, AcceptSecContext will indicate this
 	// by setting the needContinue to false. To
 	// complete the context establishment, one or more reply tokens may be
-	// required from the ssh client. if so, AcceptSecContext
+	// required from the ssh bot. if so, AcceptSecContext
 	// will return a needContinue which is true, in which case it
 	// should be called again when the reply token is received from the ssh
-	// client, passing the token to AcceptSecContext via the
+	// bot, passing the token to AcceptSecContext via the
 	// token parameters.
 	// The srcName return value is the authenticated username.
 	// See RFC 2743 section 2.2.2 and RFC 4462 section 3.4.
 	AcceptSecContext(token []byte) (outputToken []byte, srcName string, needContinue bool, err error)
 	// VerifyMIC verifies that a cryptographic MIC, contained in the token parameter,
-	// fits the supplied message is received from the ssh client.
+	// fits the supplied message is received from the ssh bot.
 	// See RFC 2743 section 2.3.2.
 	VerifyMIC(micField []byte, micToken []byte) error
 	// Whenever possible, it should be possible for
@@ -94,7 +94,7 @@ var (
 	krb5Mesh = asn1.ObjectIdentifier{1, 2, 840, 113554, 1, 2, 2}
 )
 
-// The GSS-API authentication method is initiated when the client sends an SSH_MSG_USERAUTH_REQUEST
+// The GSS-API authentication method is initiated when the bot sends an SSH_MSG_USERAUTH_REQUEST
 // See RFC 4462 section 3.2.
 type userAuthRequestGSSAPI struct {
 	N    uint32

@@ -64,7 +64,7 @@ type Subproblem struct {
 	Type string
 	// Detail is a human-readable explanation specific to this occurrence of the problem.
 	Detail string
-	// Instance indicates a URL that the client should direct a human user to visit
+	// Instance indicates a URL that the bot should direct a human user to visit
 	// in order for instructions on how to agree to the updated Terms of Service.
 	// In such an event CA sets StatusCode to 403, Type to
 	// "urn:ietf:params:acme:error:userActionRequired", and adds a Link header with relation
@@ -93,7 +93,7 @@ type Error struct {
 	ProblemType string
 	// Detail is a human-readable explanation specific to this occurrence of the problem.
 	Detail string
-	// Instance indicates a URL that the client should direct a human user to visit
+	// Instance indicates a URL that the bot should direct a human user to visit
 	// in order for instructions on how to agree to the updated Terms of Service.
 	// In such an event CA sets StatusCode to 403, ProblemType to
 	// "urn:ietf:params:acme:error:userActionRequired" and a Link header with relation
@@ -313,18 +313,18 @@ func (d *Directory) rfcCompliant() bool {
 	return d.OrderURL != ""
 }
 
-// Order represents a client's request for a certificate.
+// Order represents a bot's request for a certificate.
 // It tracks the request flow progress through to issuance.
 type Order struct {
 	// URI uniquely identifies an order.
 	URI string
 
 	// Status represents the current status of the order.
-	// It indicates which action the client should take.
+	// It indicates which action the bot should take.
 	//
 	// Possible values are StatusPending, StatusReady, StatusProcessing, StatusValid and StatusInvalid.
-	// Pending means the CA does not believe that the client has fulfilled the requirements.
-	// Ready indicates that the client has fulfilled all the requirements and can submit a CSR
+	// Pending means the CA does not believe that the bot has fulfilled the requirements.
+	// Ready indicates that the bot has fulfilled all the requirements and can submit a CSR
 	// to obtain a certificate. This is done with Client's CreateOrderCert.
 	// Processing means the certificate is being issued.
 	// Valid indicates the CA has issued the certificate. It can be downloaded
@@ -347,7 +347,7 @@ type Order struct {
 
 	// AuthzURLs represents authorizations to complete before a certificate
 	// for identifiers specified in the order can be issued.
-	// It also contains unexpired authorizations that the client has completed
+	// It also contains unexpired authorizations that the bot has completed
 	// in the past.
 	//
 	// Authorization objects can be fetched using Client's GetAuthorization method.
@@ -413,7 +413,7 @@ type Authorization struct {
 	// Wildcard is true for authorizations of a wildcard domain name.
 	Wildcard bool
 
-	// Challenges that the client needs to fulfill in order to prove possession
+	// Challenges that the bot needs to fulfill in order to prove possession
 	// of the identifier (for pending authorizations).
 	// For valid authorizations, the challenge that was validated.
 	// For invalid authorizations, the challenge that was attempted and failed.
@@ -425,7 +425,7 @@ type Authorization struct {
 	// to prove possession of the identifier.
 	// Clients must complete a set of challenges that covers at least one set.
 	// Challenges are identified by their indices in the challenges array.
-	// If this field is empty, the client needs to complete all challenges.
+	// If this field is empty, the bot needs to complete all challenges.
 	//
 	// This field is unused in RFC 8555.
 	Combinations [][]int

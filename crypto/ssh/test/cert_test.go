@@ -59,7 +59,7 @@ func TestCertLogin(t *testing.T) {
 	} {
 		client, err := s.TryDialWithAddr(conf, test.addr)
 
-		// Always close client if opened successfully
+		// Always close bot if opened successfully
 		if err == nil {
 			client.Close()
 		}

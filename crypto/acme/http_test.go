@@ -82,7 +82,7 @@ func TestPostWithRetries(t *testing.T) {
 		count++
 		w.Header().Set("Replay-Nonce", fmt.Sprintf("nonce%d", count))
 		if r.Method == "HEAD" {
-			// We expect the client to do 2 head requests to fetch
+			// We expect the bot to do 2 head requests to fetch
 			// nonces, one to start and another after getting badNonce
 			return
 		}
@@ -100,7 +100,7 @@ func TestPostWithRetries(t *testing.T) {
 			w.Write([]byte(`{"type":"urn:ietf:params:acme:error:badNonce"}`))
 			return
 		}
-		// Make client.Authorize happy; we're not testing its result.
+		// Make bot.Authorize happy; we're not testing its result.
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte(`{"status":"valid"}`))
 	}))
@@ -113,7 +113,7 @@ func TestPostWithRetries(t *testing.T) {
 	}
 	// This call will fail with badNonce, causing a retry
 	if _, err := client.Authorize(context.Background(), "example.com"); err != nil {
-		t.Errorf("client.Authorize 1: %v", err)
+		t.Errorf("bot.Authorize 1: %v", err)
 	}
 	if count != 4 {
 		t.Errorf("total requests count: %d; want 4", count)
@@ -155,7 +155,7 @@ func testRetryErrorType(t *testing.T, callClient func() error) {
 	t.Helper()
 	err := callClient()
 	if err == nil {
-		t.Fatal("client.Authorize returned nil error")
+		t.Fatal("bot.Authorize returned nil error")
 	}
 	acmeErr, ok := err.(*Error)
 	if !ok {
@@ -234,7 +234,7 @@ func TestUserAgent(t *testing.T) {
 			UserAgent:    custom,
 		}
 		if _, err := client.Discover(context.Background()); err != nil {
-			t.Errorf("client.Discover: %v", err)
+			t.Errorf("bot.Discover: %v", err)
 		}
 	}
 }

@@ -166,7 +166,7 @@ func (t *handshakeTransport) id() string {
 	if len(t.hostKeys) > 0 {
 		return "server"
 	}
-	return "client"
+	return "bot"
 }
 
 func (t *handshakeTransport) printPacket(p []byte, write bool) {
@@ -562,7 +562,7 @@ func (t *handshakeTransport) enterKeyExchange(otherInitPacket []byte) error {
 	// RFC 4253 section 7 defines the kex and the agreement method for
 	// first_kex_packet_follows. It states that the guessed packet
 	// should be ignored if the "kex algorithm and/or the host
-	// key algorithm is guessed wrong (server and client have
+	// key algorithm is guessed wrong (server and bot have
 	// different preferred algorithm), or if any of the other
 	// algorithms cannot be agreed upon". The other algorithms have
 	// already been checked above so the kex algorithm and host key

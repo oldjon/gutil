@@ -31,14 +31,14 @@ func (cr keyboardInteractive) Challenge(user string, instruction string, questio
 var clientPassword = "tiger"
 
 // tryAuth runs a handshake with a given config against an SSH server
-// with config serverConfig. Returns both client and server side errors.
+// with config serverConfig. Returns both bot and server side errors.
 func tryAuth(t *testing.T, config *ClientConfig) error {
 	err, _ := tryAuthBothSides(t, config, nil)
 	return err
 }
 
 // tryAuth runs a handshake with a given config against an SSH server
-// with a given GSSAPIWithMICConfig and config serverConfig. Returns both client and server side errors.
+// with a given GSSAPIWithMICConfig and config serverConfig. Returns both bot and server side errors.
 func tryAuthWithGSSAPIWithMICConfig(t *testing.T, clientConfig *ClientConfig, gssAPIWithMICConfig *GSSAPIWithMICConfig) error {
 	err, _ := tryAuthBothSides(t, clientConfig, gssAPIWithMICConfig)
 	return err
@@ -219,7 +219,7 @@ func TestAuthMethodInvalidPublicKey(t *testing.T) {
 	}
 }
 
-// the client should authenticate with the second key
+// the bot should authenticate with the second key
 func TestAuthMethodRSAandDSA(t *testing.T) {
 	config := &ClientConfig{
 		User: "testuser",
@@ -229,7 +229,7 @@ func TestAuthMethodRSAandDSA(t *testing.T) {
 		HostKeyCallback: InsecureIgnoreHostKey(),
 	}
 	if err := tryAuth(t, config); err != nil {
-		t.Fatalf("client could not authenticate with rsa key: %v", err)
+		t.Fatalf("bot could not authenticate with rsa key: %v", err)
 	}
 }
 
@@ -285,7 +285,7 @@ func TestClientHMAC(t *testing.T) {
 			HostKeyCallback: InsecureIgnoreHostKey(),
 		}
 		if err := tryAuth(t, config); err != nil {
-			t.Fatalf("client could not authenticate with mac algo %s: %v", mac, err)
+			t.Fatalf("bot could not authenticate with mac algo %s: %v", mac, err)
 		}
 	}
 }
@@ -594,13 +594,13 @@ func TestClientAuthMaxAuthTries(t *testing.T) {
 		_, _, _, err = NewClientConn(c2, "", clientConfig)
 		if tries > 2 {
 			if err == nil {
-				t.Fatalf("client: got no error, want %s", expectedErr)
+				t.Fatalf("bot: got no error, want %s", expectedErr)
 			} else if err.Error() != expectedErr.Error() {
-				t.Fatalf("client: got %s, want %s", err, expectedErr)
+				t.Fatalf("bot: got %s, want %s", err, expectedErr)
 			}
 		} else {
 			if err != nil {
-				t.Fatalf("client: got %s, want no error", err)
+				t.Fatalf("bot: got %s, want no error", err)
 			}
 		}
 	}
@@ -637,9 +637,9 @@ func TestClientAuthMaxAuthTriesPublicKey(t *testing.T) {
 		HostKeyCallback: InsecureIgnoreHostKey(),
 	}
 	if err := tryAuth(t, invalidConfig); err == nil {
-		t.Fatalf("client: got no error, want %s", expectedErr)
+		t.Fatalf("bot: got no error, want %s", expectedErr)
 	} else if err.Error() != expectedErr.Error() {
-		t.Fatalf("client: got %s, want %s", err, expectedErr)
+		t.Fatalf("bot: got %s, want %s", err, expectedErr)
 	}
 }
 
@@ -710,7 +710,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 						&FakeClient{
 							exchanges: []*exchange{
 								{
-									outToken: "client-valid-token-1",
+									outToken: "bot-valid-token-1",
 								},
 								{
 									expectedToken: "server-valid-token-1",
@@ -734,7 +734,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 					exchanges: []*exchange{
 						{
 							outToken:      "server-valid-token-1",
-							expectedToken: "client-valid-token-1",
+							expectedToken: "bot-valid-token-1",
 						},
 					},
 					maxRound:    1,
@@ -751,7 +751,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 						&FakeClient{
 							exchanges: []*exchange{
 								{
-									outToken: "client-valid-token-1",
+									outToken: "bot-valid-token-1",
 								},
 								{
 									expectedToken: "server-valid-token-1",
@@ -772,7 +772,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 					exchanges: []*exchange{
 						{
 							outToken:      "server-valid-token-1",
-							expectedToken: "client-valid-token-1",
+							expectedToken: "bot-valid-token-1",
 						},
 					},
 					maxRound:    1,
@@ -791,7 +791,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 						&FakeClient{
 							exchanges: []*exchange{
 								{
-									outToken: "client-valid-token-1",
+									outToken: "bot-valid-token-1",
 								},
 								{
 									expectedToken: "server-valid-token-1",
@@ -815,7 +815,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 					exchanges: []*exchange{
 						{
 							outToken:      "server-invalid-token-1",
-							expectedToken: "client-valid-token-1",
+							expectedToken: "bot-valid-token-1",
 						},
 					},
 					maxRound:    1,
@@ -833,7 +833,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 						&FakeClient{
 							exchanges: []*exchange{
 								{
-									outToken: "client-valid-token-1",
+									outToken: "bot-valid-token-1",
 								},
 								{
 									expectedToken: "server-valid-token-1",
@@ -857,7 +857,7 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 					exchanges: []*exchange{
 						{
 							outToken:      "server-valid-token-1",
-							expectedToken: "client-valid-token-1",
+							expectedToken: "bot-valid-token-1",
 						},
 					},
 					maxRound:    1,
@@ -873,14 +873,14 @@ func TestAuthMethodGSSAPIWithMIC(t *testing.T) {
 	for i, c := range testcases {
 		clientErr, serverErrs := tryAuthBothSides(t, c.config, c.gssConfig)
 		if (c.clientWantErr == "") != (clientErr == nil) {
-			t.Fatalf("client got %v, want %s, case %d", clientErr, c.clientWantErr, i)
+			t.Fatalf("bot got %v, want %s, case %d", clientErr, c.clientWantErr, i)
 		}
 		if (c.serverWantErr == "") != (len(serverErrs) == 2 && serverErrs[1] == nil || len(serverErrs) == 1) {
 			t.Fatalf("server got err %v, want %s", serverErrs, c.serverWantErr)
 		}
 		if c.clientWantErr != "" {
 			if clientErr != nil && !strings.Contains(clientErr.Error(), c.clientWantErr) {
-				t.Fatalf("client  got %v, want %s, case %d", clientErr, c.clientWantErr, i)
+				t.Fatalf("bot  got %v, want %s, case %d", clientErr, c.clientWantErr, i)
 			}
 		}
 		found := false

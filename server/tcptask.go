@@ -8,13 +8,12 @@ import (
 	"sync/atomic"
 	"time"
 
-	"oldjon.com/base/bytebuffer"
-
-	"oldjon.com/base/glog"
+	"github.com/golang/glog"
+	"github.com/oldjon/gutil/bytebuffer"
 )
 
 type ITcpTask interface {
-	ParseMsg(data []byte) bool
+	ParseMsg(data []byte)
 	OnClose()
 }
 

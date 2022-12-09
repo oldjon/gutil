@@ -46,11 +46,11 @@ func testPacketCipher(t *testing.T, cipher, mac string) {
 	}
 	client, err := newPacketCipher(clientKeys, algs, kr)
 	if err != nil {
-		t.Fatalf("newPacketCipher(client, %q, %q): %v", cipher, mac, err)
+		t.Fatalf("newPacketCipher(bot, %q, %q): %v", cipher, mac, err)
 	}
 	server, err := newPacketCipher(clientKeys, algs, kr)
 	if err != nil {
-		t.Fatalf("newPacketCipher(client, %q, %q): %v", cipher, mac, err)
+		t.Fatalf("newPacketCipher(bot, %q, %q): %v", cipher, mac, err)
 	}
 
 	want := "bla bla"
@@ -79,7 +79,7 @@ func TestCBCOracleCounterMeasure(t *testing.T) {
 	}
 	client, err := newPacketCipher(clientKeys, algs, kr)
 	if err != nil {
-		t.Fatalf("newPacketCipher(client): %v", err)
+		t.Fatalf("newPacketCipher(bot): %v", err)
 	}
 
 	want := "bla bla"
@@ -98,7 +98,7 @@ func TestCBCOracleCounterMeasure(t *testing.T) {
 	for i := 0; i < packetSize; i++ {
 		server, err := newPacketCipher(clientKeys, algs, kr)
 		if err != nil {
-			t.Fatalf("newPacketCipher(client): %v", err)
+			t.Fatalf("newPacketCipher(bot): %v", err)
 		}
 
 		fresh := &bytes.Buffer{}

@@ -111,7 +111,7 @@ func TestFindAgreedAlgorithms(t *testing.T) {
 		},
 
 		testcase{
-			name: "client decides cipher",
+			name: "bot decides cipher",
 			serverIn: kexInitMsg{
 				CiphersClientServer: []string{"cipher1", "cipher2"},
 				CiphersServerClient: []string{"cipher2", "cipher3"},
@@ -157,7 +157,7 @@ func TestFindAgreedAlgorithms(t *testing.T) {
 			serverHasErr := serverErr != nil
 			clientHasErr := clientErr != nil
 			if c.wantErr != serverHasErr || c.wantErr != clientHasErr {
-				t.Fatalf("got client/server error (%v, %v), want hasError %v",
+				t.Fatalf("got bot/server error (%v, %v), want hasError %v",
 					clientErr, serverErr, c.wantErr)
 
 			}

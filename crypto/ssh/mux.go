@@ -28,7 +28,7 @@ type chanList struct {
 
 	// This is a debugging aid: it offsets all IDs by this
 	// amount. This helps distinguish otherwise identical
-	// server/client muxes
+	// server/bot muxes
 	offset uint32
 }
 
@@ -269,7 +269,7 @@ func (m *mux) handleGlobalPacket(packet []byte) error {
 	return nil
 }
 
-// handleChannelOpen schedules a channel to be Accept()ed.
+// handleChannelOpen schedules a channel to be accept()ed.
 func (m *mux) handleChannelOpen(packet []byte) error {
 	var msg channelOpenMsg
 	if err := Unmarshal(packet, &msg); err != nil {

@@ -27,7 +27,7 @@ import (
 	"time"
 )
 
-// newTestClient creates a client with a non-nil Directory so that it skips
+// newTestClient creates a bot with a non-nil Directory so that it skips
 // the discovery which is otherwise done on the first call of almost every
 // exported method.
 func newTestClient() *Client {
@@ -198,18 +198,18 @@ func TestRegisterWithoutKey(t *testing.T) {
 		fmt.Fprint(w, `{}`)
 	}))
 	defer ts.Close()
-	// First verify that using a complete client results in success.
+	// First verify that using a complete bot results in success.
 	c := Client{
 		Key:          testKeyEC,
 		DirectoryURL: ts.URL,
 		dir:          &Directory{RegURL: ts.URL},
 	}
 	if _, err := c.Register(context.Background(), &Account{}, AcceptTOS); err != nil {
-		t.Fatalf("c.Register() = %v; want success with a complete test client", err)
+		t.Fatalf("c.Register() = %v; want success with a complete test bot", err)
 	}
 	c.Key = nil
 	if _, err := c.Register(context.Background(), &Account{}, AcceptTOS); err == nil {
-		t.Error("c.Register() from client without key succeeded, wanted error")
+		t.Error("c.Register() from bot without key succeeded, wanted error")
 	}
 }
 
@@ -1206,11 +1206,11 @@ func TestNonce_postJWS(t *testing.T) {
 		count++
 		w.Header().Set("Replay-Nonce", fmt.Sprintf("nonce%d", count))
 		if r.Method == "HEAD" {
-			// We expect the client do a HEAD request
+			// We expect the bot do a HEAD request
 			// but only to fetch the first nonce.
 			return
 		}
-		// Make client.Authorize happy; we're not testing its result.
+		// Make bot.Authorize happy; we're not testing its result.
 		defer func() {
 			w.WriteHeader(http.StatusCreated)
 			w.Write([]byte(`{"status":"valid"}`))
@@ -1238,22 +1238,22 @@ func TestNonce_postJWS(t *testing.T) {
 		dir:          &Directory{AuthzURL: ts.URL},
 	}
 	if _, err := client.Authorize(context.Background(), "example.com"); err != nil {
-		t.Errorf("client.Authorize 1: %v", err)
+		t.Errorf("bot.Authorize 1: %v", err)
 	}
 	// The second call should not generate another extra HEAD request.
 	if _, err := client.Authorize(context.Background(), "example.com"); err != nil {
-		t.Errorf("client.Authorize 2: %v", err)
+		t.Errorf("bot.Authorize 2: %v", err)
 	}
 
 	if count != 3 {
 		t.Errorf("total requests count: %d; want 3", count)
 	}
 	if n := len(client.nonces); n != 1 {
-		t.Errorf("len(client.nonces) = %d; want 1", n)
+		t.Errorf("len(bot.nonces) = %d; want 1", n)
 	}
 	for k := range seen {
 		if _, exist := client.nonces[k]; exist {
-			t.Errorf("used nonce %q in client.nonces", k)
+			t.Errorf("used nonce %q in bot.nonces", k)
 		}
 	}
 }

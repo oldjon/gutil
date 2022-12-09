@@ -13,11 +13,11 @@ import (
 // rex is a compiled regular expression to match pattern like ${templateFile:variableName}
 var rex = regexp.MustCompile(`\${([^:]+):([^}]+)}`)
 
-// ModuleConfigReader is used to read config
-type ModuleConfigReader interface {
-	// SubReader returns new ModuleConfigReader instance representing a sub tree of this instance.
+// ModuleConfig is used to read config
+type ModuleConfig interface {
+	// SubReader returns new ModuleConfig instance representing a sub tree of this instance.
 	// SubReader is case-insensitive for a key.
-	SubReader(key string) ModuleConfigReader
+	SubConfig(key string) ModuleConfig
 
 	// GetString returns the value associated with the key as a string
 	GetString(key string) string
@@ -58,14 +58,14 @@ type ModuleConfigReader interface {
 	InConfig(key string) bool
 }
 
-type moduleConfigReader struct {
+type moduleConfig struct {
 	viper            *viper.Viper
 	variablesConfigs map[string]*viper.Viper // key templateFile which is used to prefix variable like ${templateFile:variableName}
 }
 
-// newModuleConfigReader returns an initialized *moduleConfigReader.
-func newModuleConfigReader(core *viper.Viper, variablesConfigs map[string]*viper.Viper) *moduleConfigReader {
-	r := moduleConfigReader{
+// NewModuleConfig returns an initialized *moduleConfig.
+func NewModuleConfig(core *viper.Viper, variablesConfigs map[string]*viper.Viper) *moduleConfig {
+	r := moduleConfig{
 		viper:            core,
 		variablesConfigs: variablesConfigs,
 	}
@@ -73,20 +73,20 @@ func newModuleConfigReader(core *viper.Viper, variablesConfigs map[string]*viper
 	return &r
 }
 
-// SubReader returns new ModuleConfigReader instance representing a sub tree of this instance.
+// SubReader returns new ModuleConfig instance representing a sub tree of this instance.
 // SubReader is case-insensitive for a key.
-func (r *moduleConfigReader) SubReader(key string) ModuleConfigReader {
+func (r *moduleConfig) SubConfig(key string) ModuleConfig {
 	pv := r.viper.Sub(key)
 
-	return newModuleConfigReader(pv, r.variablesConfigs)
+	return NewModuleConfig(pv, r.variablesConfigs)
 }
 
-func (r *moduleConfigReader) getString(key string) (string, bool) {
+func (r *moduleConfig) getString(key string) (string, bool) {
 	value := r.viper.GetString(key)
 	return r.replaceValue(value)
 }
 
-func (r *moduleConfigReader) replaceValue(value string) (string, bool) {
+func (r *moduleConfig) replaceValue(value string) (string, bool) {
 	var isReplaced bool
 	matchStrings := rex.FindAllStringSubmatch(value, -1)
 	for _, matchString := range matchStrings {
@@ -110,13 +110,13 @@ func (r *moduleConfigReader) replaceValue(value string) (string, bool) {
 }
 
 // GetString returns the value associated with the key as a string
-func (r *moduleConfigReader) GetString(key string) string {
+func (r *moduleConfig) GetString(key string) string {
 	replacedValue, _ := r.getString(key)
 	return replacedValue
 }
 
 // GetBool returns the value associated with the key as a boolean.
-func (r *moduleConfigReader) GetBool(key string) bool {
+func (r *moduleConfig) GetBool(key string) bool {
 	replacedValue, ok := r.getString(key)
 	if !ok {
 		return r.viper.GetBool(key)
@@ -126,7 +126,7 @@ func (r *moduleConfigReader) GetBool(key string) bool {
 }
 
 // GetInt64 returns the value associated with the key as an integer.
-func (r *moduleConfigReader) GetInt64(key string) int64 {
+func (r *moduleConfig) GetInt64(key string) int64 {
 	replacedValue, ok := r.getString(key)
 	if !ok {
 		return r.viper.GetInt64(key)
@@ -136,7 +136,7 @@ func (r *moduleConfigReader) GetInt64(key string) int64 {
 }
 
 // GetInt returns the value associated with the key as an integer.
-func (r *moduleConfigReader) GetInt(key string) int {
+func (r *moduleConfig) GetInt(key string) int {
 	replacedValue, ok := r.getString(key)
 	if !ok {
 		return r.viper.GetInt(key)
@@ -146,7 +146,7 @@ func (r *moduleConfigReader) GetInt(key string) int {
 }
 
 // GetFloat64 returns the value associated with the key as a float64.
-func (r *moduleConfigReader) GetFloat64(key string) float64 {
+func (r *moduleConfig) GetFloat64(key string) float64 {
 	replacedValue, ok := r.getString(key)
 	if !ok {
 		return r.viper.GetFloat64(key)
@@ -156,7 +156,7 @@ func (r *moduleConfigReader) GetFloat64(key string) float64 {
 }
 
 // GetTime returns the value associated with the key as time.
-func (r *moduleConfigReader) GetTime(key string) time.Time {
+func (r *moduleConfig) GetTime(key string) time.Time {
 	replacedValue, ok := r.getString(key)
 	if !ok {
 		return r.viper.GetTime(key)
@@ -166,7 +166,7 @@ func (r *moduleConfigReader) GetTime(key string) time.Time {
 }
 
 // GetStringMapString returns the value associated with the key as a map of strings.
-func (r *moduleConfigReader) GetStringMapString(key string) map[string]string {
+func (r *moduleConfig) GetStringMapString(key string) map[string]string {
 	rawMap := r.viper.GetStringMapString(key)
 	for k, v := range rawMap {
 		replacedValue, ok := r.replaceValue(v)
@@ -179,7 +179,7 @@ func (r *moduleConfigReader) GetStringMapString(key string) map[string]string {
 }
 
 // GetStringSlice returns the value associated with the key as a slice of strings.
-func (r *moduleConfigReader) GetStringSlice(key string) []string {
+func (r *moduleConfig) GetStringSlice(key string) []string {
 	stringSlice := r.viper.GetStringSlice(key)
 	if stringSlice == nil {
 		return nil
@@ -199,7 +199,7 @@ func (r *moduleConfigReader) GetStringSlice(key string) []string {
 }
 
 // UnmarshalKey takes a single key and unmarshals it into a Struct.
-func (r *moduleConfigReader) UnmarshalKey(key string, rawVal interface{}) error {
+func (r *moduleConfig) UnmarshalKey(key string, rawVal interface{}) error {
 	decodeHook := func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
 		if f.Kind() == reflect.String {
 			stringData := data.(string)
@@ -216,7 +216,7 @@ func (r *moduleConfigReader) UnmarshalKey(key string, rawVal interface{}) error 
 
 // Unmarshal unmarshals the config into a Struct. Make sure that the tags
 // on the fields of the structure are properly set.
-func (r *moduleConfigReader) Unmarshal(rawVal interface{}) error {
+func (r *moduleConfig) Unmarshal(rawVal interface{}) error {
 	decodeHook := func(f reflect.Type, t reflect.Type, data interface{}) (interface{}, error) {
 		if f.Kind() == reflect.String {
 			stringData := data.(string)
@@ -233,15 +233,15 @@ func (r *moduleConfigReader) Unmarshal(rawVal interface{}) error {
 
 // IsSet checks to see if the key has been set in any of the data locations.
 // IsSet is case-insensitive for a key.
-func (r *moduleConfigReader) IsSet(key string) bool {
+func (r *moduleConfig) IsSet(key string) bool {
 	return r.viper.IsSet(key)
 }
 
 // InConfig checks to see if the given key (or an alias) is in the config file.
-func (r *moduleConfigReader) InConfig(key string) bool {
+func (r *moduleConfig) InConfig(key string) bool {
 	return r.viper.InConfig(key)
 }
 
-func (r *moduleConfigReader) GetRealViper() *viper.Viper {
+func (r *moduleConfig) GetRealViper() *viper.Viper {
 	return r.viper
 }

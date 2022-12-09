@@ -39,14 +39,14 @@ func testPortForward(t *testing.T, n, listenAddr string) {
 		defer close(errCh)
 		sshConn, err := sshListener.Accept()
 		if err != nil {
-			errCh <- fmt.Errorf("listen.Accept failed: %v", err)
+			errCh <- fmt.Errorf("listen.accept failed: %v", err)
 			return
 		}
 		defer sshConn.Close()
 
 		_, err = io.Copy(sshConn, sshConn)
 		if err != nil && err != io.EOF {
-			errCh <- fmt.Errorf("ssh client copy: %v", err)
+			errCh <- fmt.Errorf("ssh bot copy: %v", err)
 		}
 	}()
 
@@ -160,7 +160,7 @@ func TestAcceptCloseUnix(t *testing.T) {
 	testAcceptClose(t, "unix", addr)
 }
 
-// Check that listeners exit if the underlying client transport dies.
+// Check that listeners exit if the underlying bot transport dies.
 func testPortForwardConnectionClose(t *testing.T, n, listenAddr string) {
 	server := newServer(t)
 	defer server.Shutdown()

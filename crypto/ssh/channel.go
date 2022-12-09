@@ -36,11 +36,11 @@ type NewChannel interface {
 	Reject(reason RejectionReason, message string) error
 
 	// ChannelType returns the type of the channel, as supplied by the
-	// client.
+	// bot.
 	ChannelType() string
 
 	// ExtraData returns the arbitrary payload for this channel, as supplied
-	// by the client. This data is specific to the channel type.
+	// by the bot. This data is specific to the channel type.
 	ExtraData() []byte
 }
 
@@ -472,8 +472,8 @@ func (m *mux) newChannel(chanType string, direction channelDirection, extraData 
 	return ch
 }
 
-var errUndecided = errors.New("ssh: must Accept or Reject channel")
-var errDecidedAlready = errors.New("ssh: can call Accept or Reject only once")
+var errUndecided = errors.New("ssh: must accept or Reject channel")
+var errDecidedAlready = errors.New("ssh: can call accept or Reject only once")
 
 type extChannel struct {
 	code uint32

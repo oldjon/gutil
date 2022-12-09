@@ -368,7 +368,7 @@ func (p *prober) runTLSALPN01(ctx context.Context, z *acme.Authorization, chal *
 	defer s.Close()
 
 	if _, err := p.client.Accept(ctx, chal); err != nil {
-		return fmt.Errorf("Accept(%q): %v", chal.URI, err)
+		return fmt.Errorf("accept(%q): %v", chal.URI, err)
 	}
 	_, zerr := p.client.WaitAuthorization(ctx, z.URI)
 	return zerr
@@ -394,7 +394,7 @@ func (p *prober) runHTTP01(ctx context.Context, z *acme.Authorization, chal *acm
 	defer s.Close()
 
 	if _, err := p.client.Accept(ctx, chal); err != nil {
-		return fmt.Errorf("Accept(%q): %v", chal.URI, err)
+		return fmt.Errorf("accept(%q): %v", chal.URI, err)
 	}
 	_, zerr := p.client.WaitAuthorization(ctx, z.URI)
 	return zerr
@@ -416,7 +416,7 @@ func (p *prober) runDNS01(ctx context.Context, z *acme.Authorization, chal *acme
 	}
 
 	if _, err := p.client.Accept(ctx, chal); err != nil {
-		return fmt.Errorf("Accept(%q): %v", chal.URI, err)
+		return fmt.Errorf("accept(%q): %v", chal.URI, err)
 	}
 	_, zerr := p.client.WaitAuthorization(ctx, z.URI)
 	return zerr

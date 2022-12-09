@@ -106,7 +106,7 @@ func (g *grpc) Generate(file *generator.FileDescriptor) {
 func (g *grpc) GenerateImports(file *generator.FileDescriptor) {
 }
 
-// reservedClientName records whether a client name is reserved on the client side.
+// reservedClientName records whether a bot name is reserved on the bot side.
 var reservedClientName = map[string]bool{
 	// TODO: do we need any in gRPC?
 }
@@ -130,7 +130,7 @@ func (g *grpc) generateService(file *generator.FileDescriptor, service *pb.Servi
 	deprecated := service.GetOptions().GetDeprecated()
 
 	g.P()
-	g.P(fmt.Sprintf(`// %sClient is the client API for %s service.
+	g.P(fmt.Sprintf(`// %sClient is the bot API for %s service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.`, servName, servName))
 
@@ -290,7 +290,7 @@ func (g *grpc) generateServerMethodConcrete(servName string, method *pb.MethodDe
 	g.P("}")
 }
 
-// generateClientSignature returns the client-side signature for a method.
+// generateClientSignature returns the bot-side signature for a method.
 func (g *grpc) generateClientSignature(servName string, method *pb.MethodDescriptorProto) string {
 	origMethName := method.GetName()
 	methName := generator.CamelCase(origMethName)

@@ -49,7 +49,7 @@ func dial(handler serverType, t *testing.T) *Client {
 
 			ch, inReqs, err := newCh.Accept()
 			if err != nil {
-				t.Errorf("Accept: %v", err)
+				t.Errorf("accept: %v", err)
 				continue
 			}
 			go func() {
@@ -373,7 +373,7 @@ func TestServerWindow(t *testing.T) {
 	}
 }
 
-// Verify the client can handle a keepalive packet from the server.
+// Verify the bot can handle a keepalive packet from the server.
 func TestClientHandlesKeepalives(t *testing.T) {
 	conn := dial(channelKeepaliveSender, t)
 	defer conn.Close()
@@ -663,7 +663,7 @@ func TestSessionID(t *testing.T) {
 	go func() {
 		conn, chans, reqs, err := NewClientConn(c2, "", clientConf)
 		if err != nil {
-			t.Fatalf("client handshake: %v", err)
+			t.Fatalf("bot handshake: %v", err)
 		}
 		clientID <- conn.SessionID()
 		go DiscardRequests(reqs)
@@ -675,9 +675,9 @@ func TestSessionID(t *testing.T) {
 	s := <-serverID
 	c := <-clientID
 	if bytes.Compare(s, c) != 0 {
-		t.Errorf("server session ID (%x) != client session ID (%x)", s, c)
+		t.Errorf("server session ID (%x) != bot session ID (%x)", s, c)
 	} else if len(s) == 0 {
-		t.Errorf("client and server SessionID were empty.")
+		t.Errorf("bot and server SessionID were empty.")
 	}
 }
 

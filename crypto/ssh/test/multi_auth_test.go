@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Tests for ssh client multi-auth
+// Tests for ssh bot multi-auth
 //
-// These tests run a simple go ssh client against OpenSSH server
+// These tests run a simple go ssh bot against OpenSSH server
 // over unix domain sockets. The tests use multiple combinations
 // of password, keyboard-interactive and publickey authentication
 // methods.

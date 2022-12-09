@@ -49,7 +49,7 @@ func TestKexes(t *testing.T) {
 					clientRes := <-c
 					serverRes := <-s
 					if clientRes.err != nil {
-						t.Errorf("client: %v", clientRes.err)
+						t.Errorf("bot: %v", clientRes.err)
 					}
 					if serverRes.err != nil {
 						t.Errorf("server: %v", serverRes.err)

@@ -148,7 +148,7 @@ func clientConfig() *ssh.ClientConfig {
 }
 
 // unixConnection creates two halves of a connected net.UnixConn.  It
-// is used for connecting the Go SSH client with sshd without opening
+// is used for connecting the Go SSH bot with sshd without opening
 // ports.
 func unixConnection() (*net.UnixConn, *net.UnixConn, error) {
 	dir, err := ioutil.TempDir("", "unixConnection")

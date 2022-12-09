@@ -98,7 +98,7 @@ func (t *transport) printPacket(p []byte, write bool) {
 	}
 	who := "server"
 	if t.isClient {
-		who = "client"
+		who = "bot"
 	}
 	what := "read"
 	if write {
@@ -235,7 +235,7 @@ var (
 
 // setupKeys sets the cipher and MAC keys from kex.K, kex.H and sessionId, as
 // described in RFC 4253, section 6.4. direction should either be serverKeys
-// (to setup server->client keys) or clientKeys (for client->server keys).
+// (to setup server->bot keys) or clientKeys (for bot->server keys).
 func newPacketCipher(d direction, algs directionAlgorithms, kex *kexResult) (packetCipher, error) {
 	cipherMode := cipherModes[algs.Cipher]
 	macMode := macModes[algs.MAC]

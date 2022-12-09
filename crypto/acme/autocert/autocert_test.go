@@ -404,7 +404,7 @@ func TestGetCertificate_ecdsaVsRSA(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, ok := cert.Leaf.PublicKey.(*ecdsa.PublicKey); !ok {
-		t.Error("an ECDSA client was served a non-ECDSA certificate")
+		t.Error("an ECDSA bot was served a non-ECDSA certificate")
 	}
 
 	cert, err = man.GetCertificate(clientHelloInfo("example.org", algRSA))
@@ -412,7 +412,7 @@ func TestGetCertificate_ecdsaVsRSA(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, ok := cert.Leaf.PublicKey.(*rsa.PublicKey); !ok {
-		t.Error("a RSA client was served a non-RSA certificate")
+		t.Error("a RSA bot was served a non-RSA certificate")
 	}
 
 	if _, err := man.GetCertificate(clientHelloInfo("example.org", algECDSA)); err != nil {
@@ -462,7 +462,7 @@ func TestGetCertificate_wrongCacheKeyType(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, ok := cert.Leaf.PublicKey.(*ecdsa.PublicKey); !ok {
-		t.Error("an ECDSA client was served a non-ECDSA certificate")
+		t.Error("an ECDSA bot was served a non-ECDSA certificate")
 	}
 	if numCerts := cache.numCerts(); numCerts != 1 {
 		t.Errorf("found %d certificates in cache; want %d", numCerts, 1)
@@ -515,7 +515,7 @@ func startACMEServerStub(t *testing.T, tokenCert getCertificateFunc, domain stri
 			if err := discoTmpl.Execute(w, ca.URL); err != nil {
 				t.Errorf("discoTmpl: %v", err)
 			}
-		// client key registration
+		// bot key registration
 		case "/new-reg":
 			w.Write([]byte("{}"))
 		// domain authorization
@@ -689,7 +689,7 @@ func TestVerifyHTTP01(t *testing.T) {
 		case "/challenge/dns-01":
 			t.Errorf("dns-01 challenge was accepted")
 			http.Error(w, "won't accept dns-01", http.StatusBadRequest)
-		// Accept http-01.
+		// accept http-01.
 		case "/challenge/http-01":
 			didAcceptHTTP01 = true
 			verifyHTTPToken()
@@ -1209,7 +1209,7 @@ func TestEndToEnd(t *testing.T) {
 	// where to dial to instead.
 	ca.Resolve(domain, strings.TrimPrefix(us.URL, "https://"))
 
-	// A client visiting user dummy server.
+	// A bot visiting user dummy server.
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
 			RootCAs:    ca.Roots,

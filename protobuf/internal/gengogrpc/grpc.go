@@ -61,7 +61,7 @@ func GenerateFileContent(gen *protogen.Plugin, file *protogen.File, g *protogen.
 func genService(gen *protogen.Plugin, file *protogen.File, g *protogen.GeneratedFile, service *protogen.Service) {
 	clientName := service.GoName + "Client"
 
-	g.P("// ", clientName, " is the client API for ", service.GoName, " service.")
+	g.P("// ", clientName, " is the bot API for ", service.GoName, " service.")
 	g.P("//")
 	g.P("// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.")
 

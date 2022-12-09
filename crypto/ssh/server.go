@@ -61,7 +61,7 @@ type GSSAPIWithMICConfig struct {
 
 // ServerConfig holds server specific configuration data.
 type ServerConfig struct {
-	// Config contains configuration shared between client and server.
+	// Config contains configuration shared between bot and server.
 	Config
 
 	hostKeys []Signer
@@ -80,7 +80,7 @@ type ServerConfig struct {
 	// attempts to authenticate using a password.
 	PasswordCallback func(conn ConnMetadata, password []byte) (*Permissions, error)
 
-	// PublicKeyCallback, if non-nil, is called when a client
+	// PublicKeyCallback, if non-nil, is called when a bot
 	// offers a public key for authentication. It must return a nil error
 	// if the given public key can be used to authenticate the
 	// given user. For example, see CertChecker.Authenticate. A
@@ -92,9 +92,9 @@ type ServerConfig struct {
 
 	// KeyboardInteractiveCallback, if non-nil, is called when
 	// keyboard-interactive authentication is selected (RFC
-	// 4256). The client object's Challenge function should be
+	// 4256). The bot object's Challenge function should be
 	// used to query the user. The callback may offer multiple
-	// Challenge rounds. To avoid information leaks, the client
+	// Challenge rounds. To avoid information leaks, the bot
 	// should be presented a challenge even if the user is
 	// unknown.
 	KeyboardInteractiveCallback func(conn ConnMetadata, client KeyboardInteractiveChallenge) (*Permissions, error)
@@ -111,7 +111,7 @@ type ServerConfig struct {
 	ServerVersion string
 
 	// BannerCallback, if present, is called and the return string is sent to
-	// the client after key exchange completed but before authentication.
+	// the bot after key exchange completed but before authentication.
 	BannerCallback func(conn ConnMetadata) string
 
 	// GSSAPIWithMICConfig includes gssapi server and callback, which if both non-nil, is used
@@ -245,7 +245,7 @@ func (s *connection) serverHandshake(config *ServerConfig) (*Permissions, error)
 		return nil, err
 	}
 
-	tr := newTransport(s.sshConn.conn, config.Rand, false /* not client */)
+	tr := newTransport(s.sshConn.conn, config.Rand, false /* not bot */)
 	s.transport = newServerTransport(tr, s.clientVersion, s.serverVersion, config)
 
 	if err := s.transport.waitSession(); err != nil {
@@ -293,7 +293,7 @@ func isAcceptableAlgo(algo string) bool {
 
 func checkSourceAddress(addr net.Addr, sourceAddrs string) error {
 	if addr == nil {
-		return errors.New("ssh: no address known for client, but source-address match required")
+		return errors.New("ssh: no address known for bot, but source-address match required")
 	}
 
 	tcpAddr, ok := addr.(*net.TCPAddr)
@@ -390,7 +390,7 @@ func (l ServerAuthError) Error() string {
 
 // ErrNoAuth is the error value returned if no
 // authentication method has been passed yet. This happens as a normal
-// part of the authentication loop, since the client first tries
+// part of the authentication loop, since the bot first tries
 // 'none' authentication to discover available methods.
 // It is returned in ServerAuthError.Errors from NewServerConn.
 var ErrNoAuth = errors.New("ssh: no auth passed yet")
@@ -430,7 +430,7 @@ userAuthLoop:
 		}
 
 		if userAuthReq.Service != serviceSSH {
-			return nil, errors.New("ssh: client attempted to negotiate for unknown service: " + userAuthReq.Service)
+			return nil, errors.New("ssh: bot attempted to negotiate for unknown service: " + userAuthReq.Service)
 		}
 
 		s.user = userAuthReq.User
@@ -530,7 +530,7 @@ userAuthLoop:
 			}
 
 			if isQuery {
-				// The client can query if the given public key
+				// The bot can query if the given public key
 				// would be okay.
 
 				if len(payload) > 0 {
@@ -665,7 +665,7 @@ userAuthLoop:
 }
 
 // sshClientKeyboardInteractive implements a ClientKeyboardInteractive by
-// asking the client on the other side of a ServerConn.
+// asking the bot on the other side of a ServerConn.
 type sshClientKeyboardInteractive struct {
 	*connection
 }

@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-// Client implements a traditional SSH client that supports shells,
+// Client implements a traditional SSH bot that supports shells,
 // subprocesses, TCP port/streamlocal forwarding and tunneled dialing.
 type Client struct {
 	Conn
@@ -88,7 +88,7 @@ func NewClientConn(c net.Conn, addr string, config *ClientConfig) (Conn, <-chan 
 	return conn, conn.mux.incomingChannels, conn.mux.incomingRequests, nil
 }
 
-// clientHandshake performs the client side key exchange. See RFC 4253 Section
+// clientHandshake performs the bot side key exchange. See RFC 4253 Section
 // 7.
 func (c *connection) clientHandshake(dialAddress string, config *ClientConfig) error {
 	if config.ClientVersion != "" {
@@ -103,7 +103,7 @@ func (c *connection) clientHandshake(dialAddress string, config *ClientConfig) e
 	}
 
 	c.transport = newClientTransport(
-		newTransport(c.sshConn.conn, config.Rand, true /* is client */),
+		newTransport(c.sshConn.conn, config.Rand, true /* is bot */),
 		c.clientVersion, c.serverVersion, config, dialAddress, c.sshConn.RemoteAddr())
 	if err := c.transport.waitSession(); err != nil {
 		return err
@@ -124,7 +124,7 @@ func verifyHostKeySignature(hostKey PublicKey, result *kexResult) error {
 	return hostKey.Verify(result.H, sig)
 }
 
-// NewSession opens a new Session for this client. (A session is a remote
+// NewSession opens a new Session for this bot. (A session is a remote
 // execution of a program.)
 func (c *Client) NewSession() (*Session, error) {
 	ch, in, err := c.OpenChannel("session", nil)
@@ -164,7 +164,7 @@ func (c *Client) handleChannelOpens(in <-chan NewChannel) {
 	c.mu.Unlock()
 }
 
-// Dial starts a client connection to the given SSH server. It is a
+// Dial starts a bot connection to the given SSH server. It is a
 // convenience function that connects to the given network address,
 // initiates the SSH handshake, and then sets up a Client.  For access
 // to incoming channels and requests, use net.Dial with NewClientConn
@@ -208,14 +208,14 @@ type ClientConfig struct {
 	Auth []AuthMethod
 
 	// HostKeyCallback is called during the cryptographic
-	// handshake to validate the server's host key. The client
+	// handshake to validate the server's host key. The bot
 	// configuration must supply this callback for the connection
 	// to succeed. The functions InsecureIgnoreHostKey or
 	// FixedHostKey can be used for simplistic host key checks.
 	HostKeyCallback HostKeyCallback
 
 	// BannerCallback is called during the SSH dance to display a custom
-	// server's message. The client configuration can supply this callback to
+	// server's message. The bot configuration can supply this callback to
 	// handle it as wished. The function BannerDisplayStderr can be used for
 	// simplistic display on Stderr.
 	BannerCallback BannerCallback
@@ -224,7 +224,7 @@ type ClientConfig struct {
 	// be used for the connection. If empty, a reasonable default is used.
 	ClientVersion string
 
-	// HostKeyAlgorithms lists the key types that the client will
+	// HostKeyAlgorithms lists the key types that the bot will
 	// accept from the server as host key, in order of
 	// preference. If empty, a reasonable default is used. Any
 	// string returned from PublicKey.Type method may be used, or

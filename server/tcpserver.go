@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	"oldjon.com/base/glog"
+	"github.com/golang/glog"
 )
 
 type TCPGHandler func(ctx context.Context, conn *net.TCPConn)

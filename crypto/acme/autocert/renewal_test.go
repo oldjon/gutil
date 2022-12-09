@@ -63,7 +63,7 @@ func TestRenewFromCache(t *testing.T) {
 			if err := discoTmpl.Execute(w, ca.URL); err != nil {
 				t.Fatalf("discoTmpl: %v", err)
 			}
-		// client key registration
+		// bot key registration
 		case "/new-reg":
 			w.Write([]byte("{}"))
 		// domain authorization

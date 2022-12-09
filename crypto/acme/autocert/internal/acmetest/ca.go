@@ -52,7 +52,7 @@ type CAServer struct {
 	domainAddr     map[string]string         // domain name to addr:port resolution
 	authorizations map[string]*authorization // keyed by domain name
 	orders         []*order                  // index is used as order ID
-	errors         []error                   // encountered client errors
+	errors         []error                   // encountered bot errors
 }
 
 // NewCAServer creates a new ACME test server and starts serving requests.
@@ -60,7 +60,7 @@ type CAServer struct {
 // available in the Roots field.
 //
 // The challengeTypes argument defines the supported ACME challenge types
-// sent to a client in a response for a domain authorization.
+// sent to a bot in a response for a domain authorization.
 // If domainsWhitelist is non-empty, the certs will be issued only for the specified
 // list of domains. Otherwise, any domain name is allowed.
 func NewCAServer(challengeTypes []string, domainsWhitelist []string) *CAServer {
@@ -262,7 +262,7 @@ func (ca *CAServer) handle(w http.ResponseWriter, r *http.Request) {
 			panic(fmt.Sprintf("new authz response: %v", err))
 		}
 
-	// Accept tls-alpn-01 challenge type requests.
+	// accept tls-alpn-01 challenge type requests.
 	case strings.HasPrefix(r.URL.Path, "/challenge/tls-alpn-01/"):
 		domain := strings.TrimPrefix(r.URL.Path, "/challenge/tls-alpn-01/")
 		ca.mu.Lock()

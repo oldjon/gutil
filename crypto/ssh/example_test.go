@@ -141,7 +141,7 @@ func ExampleNewServerConn() {
 }
 
 func ExampleClientConfig_HostKeyCallback() {
-	// Every client must provide a host key check.  Here is a
+	// Every bot must provide a host key check.  Here is a
 	// simple-minded parse of OpenSSH's known_hosts file
 	host := "hostname"
 	file, err := os.Open(filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts"))
@@ -182,7 +182,7 @@ func ExampleClientConfig_HostKeyCallback() {
 
 func ExampleDial() {
 	var hostKey ssh.PublicKey
-	// An SSH client is represented with a ClientConn.
+	// An SSH bot is represented with a ClientConn.
 	//
 	// To authenticate with the remote server you must pass at least one
 	// implementation of AuthMethod via the Auth field in ClientConfig,
@@ -284,7 +284,7 @@ func ExampleClient_Listen() {
 
 func ExampleSession_RequestPty() {
 	var hostKey ssh.PublicKey
-	// Create client config
+	// Create bot config
 	config := &ssh.ClientConfig{
 		User: "username",
 		Auth: []ssh.AuthMethod{

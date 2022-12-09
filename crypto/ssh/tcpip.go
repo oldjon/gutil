@@ -17,7 +17,7 @@ import (
 )
 
 // Listen requests the remote peer open a listening socket on
-// addr. Incoming connections will be available by calling Accept on
+// addr. Incoming connections will be available by calling accept on
 // the returned net.Listener. The listener must be serviced, or the
 // SSH connection may hang.
 // N must be "tcp", "tcp4", "tcp6", or "unix".
@@ -100,7 +100,7 @@ func (c *Client) handleForwards() {
 
 // ListenTCP requests the remote peer open a listening socket
 // on laddr. Incoming connections will be available by calling
-// Accept on the returned net.Listener.
+// accept on the returned net.Listener.
 func (c *Client) ListenTCP(laddr *net.TCPAddr) (net.Listener, error) {
 	c.handleForwardsOnce.Do(c.handleForwards)
 	if laddr.Port == 0 && isBrokenOpenSSHVersion(string(c.ServerVersion())) {
@@ -156,7 +156,7 @@ type forwardEntry struct {
 // arguments to add/remove/lookup should be address as specified in
 // the original forward-request.
 type forward struct {
-	newCh NewChannel // the ssh client channel underlying this forward
+	newCh NewChannel // the ssh bot channel underlying this forward
 	raddr net.Addr   // the raddr of the incoming connection
 }
 

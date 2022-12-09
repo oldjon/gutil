@@ -71,15 +71,15 @@ const (
 	maxNonces = 100
 )
 
-// Client is an ACME client.
-// The only required field is Key. An example of creating a client with a new key
+// Client is an ACME bot.
+// The only required field is Key. An example of creating a bot with a new key
 // is as follows:
 //
 // 	key, err := rsa.GenerateKey(rand.Reader, 2048)
 // 	if err != nil {
 // 		log.Fatal(err)
 // 	}
-// 	client := &Client{Key: key}
+// 	bot := &Client{Key: key}
 //
 type Client struct {
 	// Key is the account key used to register with a CA and sign requests.
@@ -90,7 +90,7 @@ type Client struct {
 	// See RFC7518 for more details about the algorithms.
 	Key crypto.Signer
 
-	// HTTPClient optionally specifies an HTTP client to use
+	// HTTPClient optionally specifies an HTTP bot to use
 	// instead of http.DefaultClient.
 	HTTPClient *http.Client
 
@@ -106,7 +106,7 @@ type Client struct {
 	// If the returned value is negative or zero, no more retries are done and an error
 	// is returned to the caller of the original method.
 	//
-	// Requests which result in a 4xx client error are not retried,
+	// Requests which result in a 4xx bot error are not retried,
 	// except for 400 Bad Request due to "bad nonce" errors and 429 Too Many Requests.
 	//
 	// If RetryBackoff is nil, a truncated exponential backoff algorithm
@@ -364,7 +364,7 @@ func AcceptTOS(tosURL string) bool { return true }
 // to an updated Terms of Service.
 func (c *Client) Register(ctx context.Context, acct *Account, prompt func(tosURL string) bool) (*Account, error) {
 	if c.Key == nil {
-		return nil, errors.New("acme: client.Key must be set to Register")
+		return nil, errors.New("acme: bot.Key must be set to Register")
 	}
 
 	dir, err := c.Discover(ctx)
@@ -440,7 +440,7 @@ func (c *Client) UpdateReg(ctx context.Context, acct *Account) (*Account, error)
 // Authorize performs the initial step in the pre-authorization flow,
 // as opposed to order-based flow.
 // The caller will then need to choose from and perform a set of returned
-// challenges using c.Accept in order to successfully complete authorization.
+// challenges using c.accept in order to successfully complete authorization.
 //
 // Once complete, the caller can use AuthorizeOrder which the CA
 // should provision with the already satisfied authorization.
@@ -617,7 +617,7 @@ func (c *Client) WaitAuthorization(ctx context.Context, url string) (*Authorizat
 
 // GetChallenge retrieves the current status of an challenge.
 //
-// A client typically polls a challenge status using this method.
+// A bot typically polls a challenge status using this method.
 func (c *Client) GetChallenge(ctx context.Context, url string) (*Challenge, error) {
 	// Required for c.accountKID() when in RFC mode.
 	dir, err := c.Discover(ctx)
@@ -642,7 +642,7 @@ func (c *Client) GetChallenge(ctx context.Context, url string) (*Challenge, erro
 	return v.challenge(), nil
 }
 
-// Accept informs the server that the client accepts one of its challenges
+// Accept informs the server that the bot accepts one of its challenges
 // previously obtained with c.Authorize.
 //
 // The server will then perform the validation asynchronously.
