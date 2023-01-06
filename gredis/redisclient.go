@@ -210,7 +210,7 @@ func NewRedisClientByConfig(cfg env.ModuleConfig, redisDBKey string) (RedisClien
 
 	client, err := NewRedisClient(&redisConfig)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create gredis bot: %w, %s aaaaaaa", err, redisConfig.Addr)
+		return nil, fmt.Errorf("failed to create redis client: %w, %s", err, redisConfig.Addr)
 	}
 
 	return client, nil

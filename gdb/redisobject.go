@@ -24,6 +24,14 @@ func (rc *redisClient) SetObject(ctx context.Context, key string, obj interface{
 	return rc.Set(ctx, key, bys)
 }
 
+func (rc *redisClient) SetObjectEx(ctx context.Context, key string, obj interface{}, expiration time.Duration) error {
+	bys, err := rc.objMarshaller.Marshal(obj)
+	if err != nil {
+		return err
+	}
+	return rc.SetEx(ctx, key, bys, expiration)
+}
+
 func (rc *redisClient) IsErrNil(err error) bool {
 	return errors.Is(err, redis.Nil)
 }
@@ -55,7 +63,25 @@ func (rc *redisClient) GetObjects(ctx context.Context, keys []string, objs []int
 	return nil
 }
 
-func (rc *redisClient) SetObjects(ctx context.Context, keys []string, objs []interface{}, expiration time.Duration) error {
+func (rc *redisClient) SetObjects(ctx context.Context, keys []string, objs []interface{}) error {
+	if len(keys) == 0 {
+		return ErrKeyIsMissing
+	}
+	if len(keys) != len(objs) {
+		return ErrKeyValueCountDismatch
+	}
+	var err error
+	datas := make([]interface{}, len(objs))
+	for i, obj := range objs {
+		datas[i], err = rc.objMarshaller.Marshal(obj)
+		if err != nil {
+			return err
+		}
+	}
+	return rc.BatchSet(ctx, keys, datas, -1)
+}
+
+func (rc *redisClient) SetObjectsEx(ctx context.Context, keys []string, objs []interface{}, expiration time.Duration) error {
 	if len(keys) == 0 {
 		return ErrKeyIsMissing
 	}
