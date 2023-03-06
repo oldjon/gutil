@@ -53,10 +53,17 @@ func (bb *ByteBuffer) WriteGrow(size int) {
 }
 
 func (bb *ByteBuffer) ReadBuf() []byte {
-	if bb._readerIndex >= len(bb._buffer) {
+	if bb._readerIndex >= bb._writerIndex {
 		return nil
 	}
-	return bb._buffer[bb._readerIndex:]
+	return bb._buffer[bb._readerIndex:bb._writerIndex]
+}
+
+func (bb *ByteBuffer) ReadBufN(num int) []byte {
+	if bb._readerIndex+num > bb._writerIndex {
+		return nil
+	}
+	return bb._buffer[bb._readerIndex : bb._readerIndex+num]
 }
 
 func (bb *ByteBuffer) ReadReady() bool {
@@ -67,7 +74,7 @@ func (bb *ByteBuffer) ReadSize() int {
 	return bb._writerIndex - bb._readerIndex
 }
 
-func (bb *ByteBuffer) RdFlip(size int) {
+func (bb *ByteBuffer) ReadFlip(size int) {
 	if size < bb.ReadSize() {
 		bb._readerIndex += size
 	} else {
@@ -86,9 +93,15 @@ func (bb *ByteBuffer) MaxSize() int {
 
 func (bb *ByteBuffer) writeReserve(size int) {
 	if bb.WriteSize()+bb._readerIndex < size+bb._prependSize {
-		tmpBuff := make([]byte, bb._writerIndex+size)
-		copy(tmpBuff, bb._buffer)
+		readable := bb.ReadSize()
+		tmpBuff := make([]byte, readable+size+bb._prependSize)
+		if bb._prependSize > 0 {
+			copy(tmpBuff, bb._buffer[:bb._prependSize])
+		}
+		copy(tmpBuff[bb._prependSize:], bb._buffer[bb._readerIndex:bb._writerIndex])
 		bb._buffer = tmpBuff
+		bb._readerIndex = bb._prependSize
+		bb._writerIndex = bb._readerIndex + readable
 	} else {
 		readable := bb.ReadSize()
 		copy(bb._buffer[bb._prependSize:], bb._buffer[bb._readerIndex:bb._writerIndex])
@@ -105,4 +118,8 @@ func (bb *ByteBuffer) Prepend(buff []byte) bool {
 	bb._readerIndex -= size
 	copy(bb._buffer[bb._readerIndex:], buff)
 	return true
+}
+
+func (bb *ByteBuffer) Cap() int {
+	return cap(bb._buffer)
 }
