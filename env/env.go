@@ -13,6 +13,14 @@ import (
 // rex is a compiled regular expression to match pattern like ${templateFile:variableName}
 var rex = regexp.MustCompile(`\${([^:]+):([^}]+)}`)
 
+type VarReader interface {
+	// GetString returns the value associated with the key as a string
+	GetString(key string) string
+
+	// IsSet checks to see if the key has been set in any of the data locations.
+	IsSet(key string) bool
+}
+
 // ModuleConfig is used to read config
 type ModuleConfig interface {
 	// SubReader returns new ModuleConfig instance representing a sub tree of this instance.
@@ -60,11 +68,11 @@ type ModuleConfig interface {
 
 type moduleConfig struct {
 	viper            *viper.Viper
-	variablesConfigs map[string]*viper.Viper // key templateFile which is used to prefix variable like ${templateFile:variableName}
+	variablesConfigs map[string]VarReader // key templateFile which is used to prefix variable like ${templateFile:variableName}
 }
 
 // NewModuleConfig returns an initialized *moduleConfig.
-func NewModuleConfig(core *viper.Viper, variablesConfigs map[string]*viper.Viper) *moduleConfig {
+func NewModuleConfig(core *viper.Viper, variablesConfigs map[string]VarReader) *moduleConfig {
 	r := moduleConfig{
 		viper:            core,
 		variablesConfigs: variablesConfigs,
