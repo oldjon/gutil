@@ -39,18 +39,18 @@ func (ts *tcpServer) Bind(address string) error {
 
 func (ts *tcpServer) Accept() (*net.TCPConn, error) {
 
-	ts.listener.SetDeadline(time.Now().Add(time.Second * 1))
+	_ = ts.listener.SetDeadline(time.Now().Add(time.Second * 1))
 
 	conn, err := ts.listener.AcceptTCP()
 	if err != nil {
 		return nil, err
 	}
 
-	conn.SetKeepAlive(true)
-	conn.SetKeepAlivePeriod(time.Minute)
-	conn.SetNoDelay(true)
-	conn.SetWriteBuffer(128 * 1024)
-	conn.SetReadBuffer(128 * 1024)
+	_ = conn.SetKeepAlive(true)
+	_ = conn.SetKeepAlivePeriod(time.Minute)
+	_ = conn.SetNoDelay(true)
+	_ = conn.SetWriteBuffer(128 * 1024)
+	_ = conn.SetReadBuffer(128 * 1024)
 
 	return conn, nil
 }
