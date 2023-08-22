@@ -9,9 +9,8 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
+	hkdf2 "golang.org/x/crypto/hkdf"
 	"io"
-
-	"golang.org/x/crypto/hkdf"
 )
 
 // Usage example that expands one master secret into three other
@@ -34,7 +33,7 @@ func Example_usage() {
 	info := []byte("hkdf example")
 
 	// Generate three 128-bit derived keys.
-	hkdf := hkdf.New(hash, secret, salt, info)
+	hkdf := hkdf2.New(hash, secret, salt, info)
 
 	var keys [][]byte
 	for i := 0; i < 3; i++ {

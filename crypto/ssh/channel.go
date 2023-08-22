@@ -126,7 +126,7 @@ func (r RejectionReason) String() string {
 	case UnknownChannelType:
 		return "unknown channel type"
 	case ResourceShortage:
-		return "resource shortage"
+		return "resources shortage"
 	}
 	return fmt.Sprintf("unknown reason %d", int(r))
 }

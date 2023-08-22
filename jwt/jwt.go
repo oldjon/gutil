@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type errorHandler func(w http.ResponseWriter, r *http.Request, err string)
@@ -50,6 +50,11 @@ func (m *Middleware) Handler(h http.Handler) http.Handler {
 
 		h.ServeHTTP(w, nr)
 	})
+}
+
+func GetJWTTokenStr(r *http.Request) string {
+	token, _ := FromAuthHeader(r)
+	return token
 }
 
 func (m *Middleware) CheckJWT(w http.ResponseWriter, r *http.Request) (*http.Request, error) {

@@ -5,12 +5,12 @@
 package agent_test
 
 import (
+	"golang.org/x/crypto/ssh/agent"
 	"log"
 	"net"
 	"os"
 
 	"golang.org/x/crypto/ssh"
-	"golang.org/x/crypto/ssh/agent"
 )
 
 func ExampleNewClient() {

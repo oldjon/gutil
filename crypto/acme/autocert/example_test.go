@@ -6,10 +6,9 @@ package autocert_test
 
 import (
 	"fmt"
+	"golang.org/x/crypto/acme/autocert"
 	"log"
 	"net/http"
-
-	"golang.org/x/crypto/acme/autocert"
 )
 
 func ExampleNewListener() {

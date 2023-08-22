@@ -797,7 +797,7 @@ func TestAcceptChallenge(t *testing.T) {
 
 		// Test request
 		if j.Resource != "challenge" {
-			t.Errorf(`resource = %q; want "challenge"`, j.Resource)
+			t.Errorf(`resources = %q; want "challenge"`, j.Resource)
 		}
 		if j.Type != "http-01" {
 			t.Errorf(`type = %q; want "http-01"`, j.Type)
@@ -859,7 +859,7 @@ func TestNewCert(t *testing.T) {
 		}
 
 		var j struct {
-			Resource  string `json:"resource"`
+			Resource  string `json:"resources"`
 			CSR       string `json:"csr"`
 			NotBefore string `json:"notBefore,omitempty"`
 			NotAfter  string `json:"notAfter,omitempty"`
@@ -868,7 +868,7 @@ func TestNewCert(t *testing.T) {
 
 		// Test request
 		if j.Resource != "new-cert" {
-			t.Errorf(`resource = %q; want "new-cert"`, j.Resource)
+			t.Errorf(`resources = %q; want "new-cert"`, j.Resource)
 		}
 		if j.NotBefore != notBefore.Format(time.RFC3339) {
 			t.Errorf(`notBefore = %q; wanted %q`, j.NotBefore, notBefore.Format(time.RFC3339))

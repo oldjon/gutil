@@ -11,11 +11,11 @@ import (
 	"crypto"
 	"crypto/rand"
 	"encoding/hex"
+	"golang.org/x/crypto/ed25519"
 	"os"
 	"strings"
 	"testing"
 
-	"golang.org/x/crypto/ed25519"
 	"golang.org/x/crypto/ed25519/internal/edwards25519"
 )
 

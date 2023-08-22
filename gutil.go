@@ -3,14 +3,17 @@ package gutil
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"strconv"
+	"strings"
+
 	"golang.org/x/exp/constraints"
 )
 
-func IF[T interface{}](cdt bool, a, b T) T {
-	if cdt {
-		return a
+func If[T any](ok bool, trueValue, falseValue T) T {
+	if ok {
+		return trueValue
 	}
-	return b
+	return falseValue
 }
 
 func MD5(str string) string {
@@ -43,4 +46,42 @@ func Bound[T constraints.Ordered](a, min, max T) T {
 		return max
 	}
 	return a
+}
+
+func Str2Uint32(str string) uint32 {
+	n, _ := strconv.ParseUint(str, 10, 32)
+	return uint32(n)
+}
+
+func Str2Uint64(str string) uint64 {
+	n, _ := strconv.ParseUint(str, 10, 64)
+	return n
+}
+
+func Str2Int32(str string) int32 {
+	n, _ := strconv.ParseInt(str, 10, 32)
+	return int32(n)
+}
+
+func Str2Int64(str string) int64 {
+	n, _ := strconv.ParseInt(str, 10, 64)
+	return n
+}
+
+func Str2Float32(str string) float32 {
+	n, _ := strconv.ParseFloat(str, 32)
+	return float32(n)
+}
+
+func Str2Float64(str string) float64 {
+	n, _ := strconv.ParseFloat(str, 64)
+	return n
+}
+
+func Str2Bool(str string) bool {
+	str = strings.ToLower(str)
+	if str == "true" || str == "1" {
+		return true
+	}
+	return false
 }

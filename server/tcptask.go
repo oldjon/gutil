@@ -213,7 +213,7 @@ func (tt *TCPTask) RecvLoop() {
 		}
 
 		tt.Derived.ParseMsg(msgBuff[:dataSize])
-		tt.recvBuff.RdFlip(dataSize)
+		tt.recvBuff.ReadFlip(dataSize)
 	}
 }
 
@@ -256,7 +256,7 @@ func (tt *TCPTask) SendLoop(job *sync.WaitGroup) {
 					glog.Error("[连接] 发送失败 ", tt.RemoteAddr(), ",", err)
 					return
 				}
-				tmpByte.RdFlip(writeNum)
+				tmpByte.ReadFlip(writeNum)
 			}
 		case <-tt.stoppedChan:
 			return

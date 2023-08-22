@@ -2,8 +2,8 @@ package conv
 
 import "strconv"
 
-// StringToUInt32 convert string to uint32
-func StringToUInt32(v string) uint32 {
+// StringToUint32 convert string to uint32
+func StringToUint32(v string) uint32 {
 	i, err := strconv.ParseUint(v, 10, 32)
 	if err != nil {
 		return 0
@@ -20,8 +20,8 @@ func StringToBool(v string) bool {
 	return i
 }
 
-// UInt32ToString convert uint32 to string
-func UInt32ToString(v uint32) string {
+// Uint32ToString convert uint32 to string
+func Uint32ToString(v uint32) string {
 	return strconv.FormatUint(uint64(v), 10)
 }
 
@@ -34,13 +34,13 @@ func StringToInt32(v string) int32 {
 	return int32(i)
 }
 
-// UIn64ToString convert uint64 to string
-func UIn64ToString(v uint64) string {
+// Uin64ToString convert uint64 to string
+func Uin64ToString(v uint64) string {
 	return strconv.FormatUint(v, 10)
 }
 
-// StringToUInt64 convert string to uint64
-func StringToUInt64(v string) uint64 {
+// StringToUint64 convert string to uint64
+func StringToUint64(v string) uint64 {
 	i, err := strconv.ParseUint(v, 10, 64)
 	if err != nil {
 		return 0

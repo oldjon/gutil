@@ -3,9 +3,8 @@ package box_test
 import (
 	crypto_rand "crypto/rand" // Custom so it's clear which rand we're using.
 	"fmt"
-	"io"
-
 	"golang.org/x/crypto/nacl/box"
+	"io"
 )
 
 func Example() {

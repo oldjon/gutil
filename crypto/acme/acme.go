@@ -75,12 +75,11 @@ const (
 // The only required field is Key. An example of creating a bot with a new key
 // is as follows:
 //
-// 	key, err := rsa.GenerateKey(rand.Reader, 2048)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	bot := &Client{Key: key}
-//
+//	key, err := rsa.GenerateKey(rand.Reader, 2048)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	bot := &Client{Key: key}
 type Client struct {
 	// Key is the account key used to register with a CA and sign requests.
 	// Key.Public() must return a *rsa.PublicKey or *ecdsa.PublicKey.
@@ -255,7 +254,7 @@ func (c *Client) CreateCert(ctx context.Context, csr []byte, exp time.Duration, 
 	}
 
 	req := struct {
-		Resource  string `json:"resource"`
+		Resource  string `json:"resources"`
 		CSR       string `json:"csr"`
 		NotBefore string `json:"notBefore,omitempty"`
 		NotAfter  string `json:"notAfter,omitempty"`
@@ -330,7 +329,7 @@ func (c *Client) RevokeCert(ctx context.Context, key crypto.Signer, cert []byte,
 
 	// Legacy CA.
 	body := &struct {
-		Resource string `json:"resource"`
+		Resource string `json:"resources"`
 		Cert     string `json:"certificate"`
 		Reason   int    `json:"reason"`
 	}{
@@ -476,7 +475,7 @@ func (c *Client) authorize(ctx context.Context, typ, val string) (*Authorization
 		Value string `json:"value"`
 	}
 	req := struct {
-		Resource   string  `json:"resource"`
+		Resource   string  `json:"resources"`
 		Identifier authzID `json:"identifier"`
 	}{
 		Resource:   "new-authz",
@@ -541,7 +540,7 @@ func (c *Client) RevokeAuthorization(ctx context.Context, url string) error {
 	}
 
 	req := struct {
-		Resource string `json:"resource"`
+		Resource string `json:"resources"`
 		Status   string `json:"status"`
 		Delete   bool   `json:"delete"`
 	}{
@@ -660,7 +659,7 @@ func (c *Client) Accept(ctx context.Context, chal *Challenge) (*Challenge, error
 			return nil, err
 		}
 		req = struct {
-			Resource string `json:"resource"`
+			Resource string `json:"resources"`
 			Type     string `json:"type"`
 			Auth     string `json:"keyAuthorization"`
 		}{
@@ -806,7 +805,7 @@ func (c *Client) TLSALPN01ChallengeCert(token, domain string, opt ...CertOption)
 }
 
 // doReg sends all types of registration requests the old way (pre-RFC world).
-// The type of request is identified by typ argument, which is a "resource"
+// The type of request is identified by typ argument, which is a "resources"
 // in the ACME spec terms.
 //
 // A non-nil acct argument indicates whether the intention is to mutate data
@@ -814,7 +813,7 @@ func (c *Client) TLSALPN01ChallengeCert(token, domain string, opt ...CertOption)
 // in such cases.
 func (c *Client) doReg(ctx context.Context, url string, typ string, acct *Account) (*Account, error) {
 	req := struct {
-		Resource  string   `json:"resource"`
+		Resource  string   `json:"resources"`
 		Contact   []string `json:"contact,omitempty"`
 		Agreement string   `json:"agreement,omitempty"`
 	}{

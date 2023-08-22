@@ -3,19 +3,19 @@ package grmux
 import (
 	"context"
 	"errors"
+	"github.com/opentracing/opentracing-go"
 	"math/rand"
 	"time"
 
 	"github.com/oldjon/gutil/env"
-
-	"github.com/oldjon/gutil/gredis"
+	"github.com/oldjon/gutil/gdb"
 
 	"go.uber.org/zap"
 )
 
 const (
 	redisMuxPrefix             = "rmux:"
-	defaultExpiration          = 5000 * time.Millisecond // ms
+	defaultExpiration          = 8000 * time.Millisecond // ms
 	defaultLockRetryTimes      = 30
 	defaultSleepTimeExpandStep = 10 * time.Millisecond // ms
 	defaultSleepTimeFloat      = 10 * time.Millisecond // ms
@@ -44,13 +44,13 @@ func (ro *RedisMuxOption) init() {
 }
 
 type RedisMutex struct {
-	client gredis.RedisClient
+	client gdb.RedisClient
 	logger *zap.Logger
 	opt    *RedisMuxOption
 }
 
-func NewRedisMux(cfg env.ModuleConfig, redisDBKey string, opt *RedisMuxOption, logger *zap.Logger) (*RedisMutex, error) {
-	client, err := gredis.NewRedisClientByConfig(cfg, redisDBKey)
+func NewRedisMux(cfg env.ModuleConfig, opt *RedisMuxOption, logger *zap.Logger, tracer opentracing.Tracer) (*RedisMutex, error) {
+	client, err := gdb.NewRedisClientByConfig(cfg, "", tracer)
 	if err != nil {
 		return nil, err
 	}
@@ -71,14 +71,17 @@ func (rm *RedisMutex) Lock(ctx context.Context, key string) bool {
 	i := 0
 	lockKey := redisMuxPrefix + key
 	for ; i < 25; i++ {
-		ok, _ := rm.client.SetNX(ctx, lockKey, 1, rm.opt.Expiration)
+		ok, err := rm.client.SetEXNX(ctx, lockKey, 1, rm.opt.Expiration)
 		if ok {
 			return true
+		}
+		if err != nil {
+			rm.logger.Error("RedisMux lock failed with err", zap.String("key", lockKey), zap.Error(err))
 		}
 		time.Sleep(rm.opt.SleepTimeExpandStep*time.Duration(i+1) + rm.opt.SleepTimeFloat*time.Duration(rand.Intn(10))/10)
 	}
 	if i >= 25 {
-		rm.logger.Info("RedisMux lock failed", zap.String("key", lockKey))
+		rm.logger.Error("RedisMux lock failed", zap.String("key", lockKey))
 	}
 	return false
 }
@@ -105,7 +108,7 @@ func (rm *RedisMutex) Safely(ctx context.Context, key string, handler HandlerFun
 	funcStart := time.Now()
 	err := handler()
 	funcCost = time.Since(funcStart)
-	if funcCost < rm.opt.Expiration-10*time.Millisecond {
+	if funcCost < rm.opt.Expiration-3*time.Millisecond {
 		rm.Unlock(ctx, key)
 	} // else expire itself
 	return err

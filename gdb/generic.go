@@ -6,6 +6,7 @@ import (
 )
 
 type Generic interface {
+	IsErrNil(err error) bool
 	Exists(ctx context.Context, key string) (bool, error)
 	TTL(ctx context.Context, key string) (time.Duration, error)
 	Del(ctx context.Context, key string) (uint32, error)

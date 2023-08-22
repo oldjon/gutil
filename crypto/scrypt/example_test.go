@@ -7,9 +7,8 @@ package scrypt_test
 import (
 	"encoding/base64"
 	"fmt"
-	"log"
-
 	"golang.org/x/crypto/scrypt"
+	"log"
 )
 
 func Example() {

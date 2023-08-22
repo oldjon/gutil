@@ -7,8 +7,8 @@ package cryptobyte_test
 import (
 	"errors"
 	"fmt"
-
 	"golang.org/x/crypto/cryptobyte"
+
 	"golang.org/x/crypto/cryptobyte/asn1"
 )
 

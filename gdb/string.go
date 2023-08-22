@@ -1,57 +1,53 @@
 package gdb
 
+// Funcs handle the redis data type string
+
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 )
 
 type String interface {
-	SetNX(ctx context.Context, key string, value interface{}, expiration time.Duration) (bool, error)
-	Set(ctx context.Context, key string, value interface{}) error
-	SetEx(ctx context.Context, key string, value interface{}, expiration time.Duration) error
+	SetNX(ctx context.Context, key string, value any) (bool, error)
+	SetEXNX(ctx context.Context, key string, value any, expiration time.Duration) (bool, error)
+	Set(ctx context.Context, key string, value any) error
+	SetEX(ctx context.Context, key string, value any, expiration time.Duration) error
 	Get(ctx context.Context, key string) (string, error)
 	Incr(ctx context.Context, key string) (int64, error)
 	IncrBy(ctx context.Context, key string, value int64) (int64, error)
 	BatchGet(ctx context.Context, keys []string) ([]*redis.StringCmd, error)
-	BatchSet(ctx context.Context, keys []string, values []interface{}, expiration time.Duration) error
+	BatchSet(ctx context.Context, keys []string, values []any, expiration time.Duration) error
 }
 
-func (rc *redisClient) SetNX(ctx context.Context, key string, value interface{}, expiration time.Duration) (bool, error) {
-	ret := rc.client.SetNX(ctx, key, value, expiration)
-	ok, err := ret.Result()
-	return ok, err
+func (rc *redisClient) SetNX(ctx context.Context, key string, value any) (bool, error) {
+	return rc.SetEXNX(ctx, key, value, 0)
 }
 
-func (rc *redisClient) Set(ctx context.Context, key string, value interface{}) error {
-	ret := rc.client.Set(ctx, key, value, -1)
-	_, err := ret.Result()
-	return err
+func (rc *redisClient) SetEXNX(ctx context.Context, key string, value any, expiration time.Duration) (bool, error) {
+	return rc.client.SetNX(ctx, key, value, expiration).Result()
 }
 
-func (rc *redisClient) SetEx(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	ret := rc.client.Set(ctx, key, value, expiration)
-	_, err := ret.Result()
-	return err
+func (rc *redisClient) Set(ctx context.Context, key string, value any) error {
+	return rc.client.Set(ctx, key, value, -1).Err()
+}
+
+func (rc *redisClient) SetEX(ctx context.Context, key string, value any, expiration time.Duration) error {
+	return rc.client.Set(ctx, key, value, expiration).Err()
 }
 
 func (rc *redisClient) Get(ctx context.Context, key string) (string, error) {
-	ret := rc.client.Get(ctx, key)
-	value, err := ret.Result()
-	return value, err
+	return rc.client.Get(ctx, key).Result()
 }
 
 func (rc *redisClient) Incr(ctx context.Context, key string) (int64, error) {
-	ret := rc.client.Incr(ctx, key)
-	value, err := ret.Result()
-	return value, err
+	return rc.client.Incr(ctx, key).Result()
 }
 
 func (rc *redisClient) IncrBy(ctx context.Context, key string, value int64) (int64, error) {
-	ret := rc.client.IncrBy(ctx, key, value)
-	value, err := ret.Result()
-	return value, err
+	return rc.client.IncrBy(ctx, key, value).Result()
 }
 
 func (rc *redisClient) BatchGet(ctx context.Context, keys []string) ([]*redis.StringCmd, error) {
@@ -61,7 +57,7 @@ func (rc *redisClient) BatchGet(ctx context.Context, keys []string) ([]*redis.St
 		}
 		return nil
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, redis.Nil) {
 		return nil, err
 	}
 	cmds := make([]*redis.StringCmd, len(rets))
@@ -71,9 +67,9 @@ func (rc *redisClient) BatchGet(ctx context.Context, keys []string) ([]*redis.St
 	return cmds, nil
 }
 
-func (rc *redisClient) BatchSet(ctx context.Context, keys []string, values []interface{}, expiration time.Duration) error {
+func (rc *redisClient) BatchSet(ctx context.Context, keys []string, values []any, expiration time.Duration) error {
 	if len(keys) != len(values) {
-		return ErrKeyValueCountDismatch
+		panic(PanicKeyValueCountUnmatched)
 	}
 	_, err := rc.client.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
 		for i, key := range keys {

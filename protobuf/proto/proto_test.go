@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"log"
 	"math"
 	"math/rand"
@@ -18,8 +19,6 @@ import (
 	"sync"
 	"testing"
 	"time"
-
-	"github.com/golang/protobuf/proto"
 
 	"google.golang.org/protobuf/testing/protopack"
 

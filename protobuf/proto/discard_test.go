@@ -5,9 +5,8 @@
 package proto_test
 
 import (
-	"testing"
-
 	"github.com/golang/protobuf/proto"
+	"testing"
 
 	"google.golang.org/protobuf/testing/protopack"
 

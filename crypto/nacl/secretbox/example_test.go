@@ -8,9 +8,8 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"io"
-
 	"golang.org/x/crypto/nacl/secretbox"
+	"io"
 )
 
 func Example() {

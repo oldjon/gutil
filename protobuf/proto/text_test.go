@@ -7,12 +7,11 @@ package proto_test
 import (
 	"bytes"
 	"errors"
+	"github.com/golang/protobuf/proto"
 	"math"
 	"strings"
 	"sync"
 	"testing"
-
-	"github.com/golang/protobuf/proto"
 
 	"github.com/google/go-cmp/cmp"
 

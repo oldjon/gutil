@@ -9,6 +9,8 @@ import (
 
 	"github.com/go-redis/redis/v8"
 	"github.com/oldjon/gutil/env"
+	"github.com/oldjon/gutil/marshaller"
+	"github.com/opentracing/opentracing-go"
 )
 
 type Mode uint8
@@ -36,7 +38,7 @@ const (
 	ttlKeyNotExists    = -2
 )
 
-// RedisClientOption gredis bot option
+// RedisClientOption gredis client option
 type RedisClientOption struct {
 	Mode                Mode
 	Addr                string
@@ -50,19 +52,24 @@ type RedisClientOption struct {
 	DialTimeout         time.Duration
 	ReadTimeout         time.Duration
 	WriteTimeout        time.Duration
-	Marshaller          Marshaller
+	Marshaller          gmarshaller.Marshaller
+	Hooks               []redis.Hook
 }
 
-// RedisClient introduce all the gredis method we need for gredis bot and also with context support
+// RedisClient introduce all the gredis method we need for gredis client and also with context support
 type RedisClient interface {
 	io.Closer
 	Generic
 	String
+	Hash
+	SortedSet
 	ObjectDB
+	Pipeline() Pipeliner
+	TxPipeline() Pipeliner
 }
 
 // NewRedisClient create a redisClient object from config
-// it will create bot connect to single, ring or cluster based on the configuration
+// it will create client connect to single, ring or cluster based on the configuration
 // currently we only support redisClient, may add more in the future (for example , v9Client?), so we return an interface
 func NewRedisClient(option *RedisClientOption) (RedisClient, error) {
 	// keep backward compatible with current config file
@@ -79,6 +86,7 @@ func NewRedisClient(option *RedisClientOption) (RedisClient, error) {
 			option.DialTimeout,
 			option.ReadTimeout,
 			option.WriteTimeout,
+			option.Hooks,
 		)
 	case Cluster:
 		client, err = newRedisClientCluster(
@@ -90,6 +98,7 @@ func NewRedisClient(option *RedisClientOption) (RedisClient, error) {
 			option.DialTimeout,
 			option.ReadTimeout,
 			option.WriteTimeout,
+			option.Hooks,
 		)
 	default:
 		return nil, ErrConfigNotFound
@@ -112,11 +121,11 @@ func NewRedisClient(option *RedisClientOption) (RedisClient, error) {
 type redisClient struct {
 	client        redis.UniversalClient // client would be a universal client to support single or ring or cluster
 	mode          string
-	objMarshaller Marshaller
+	objMarshaller gmarshaller.Marshaller
 }
 
-func getRedisMode(configReader env.ModuleConfig, configKey string) Mode {
-	mode := configReader.GetString(configKey + ".mode")
+func getRedisMode(configReader env.ModuleConfig) Mode {
+	mode := configReader.GetString("mode")
 	if mode == "single" {
 		return Single
 	}
@@ -126,9 +135,9 @@ func getRedisMode(configReader env.ModuleConfig, configKey string) Mode {
 	return Single
 }
 
-// newRedisClientSingle create a RedisClient object using gredis v8 bot in single instance mode
+// newRedisClientSingle create a RedisClient object using gredis v8 client in single instance mode
 func newRedisClientSingle(addr string, password string, db int, poolSize int, dialTimeOut time.Duration,
-	readTimeOut time.Duration, writeTimeOut time.Duration) (*redisClient, error) {
+	readTimeOut time.Duration, writeTimeOut time.Duration, hooks []redis.Hook) (*redisClient, error) {
 	rc := redisClient{}
 	rc.client = redis.NewClient(&redis.Options{
 		Addr:         addr,
@@ -139,20 +148,25 @@ func newRedisClientSingle(addr string, password string, db int, poolSize int, di
 		ReadTimeout:  readTimeOut,
 		WriteTimeout: writeTimeOut,
 	})
-
+	for _, hook := range hooks {
+		rc.client.AddHook(hook)
+	}
 	rc.mode = "single"
 
 	return &rc, nil
 }
 
-// newRedisClientSingle create a RedisClient object using gredis v8 bot in cluster instance mode
+// newRedisClientSingle create a RedisClient object using gredis v8 client in cluster instance mode
 func newRedisClientCluster(addrs []string, password string, poolSize int,
 	maxRedirects int, readOnly bool, dialTimeOut time.Duration,
-	readTimeOut time.Duration, writeTimeOut time.Duration) (*redisClient, error) {
+	readTimeOut time.Duration, writeTimeOut time.Duration, hooks []redis.Hook) (*redisClient, error) {
 	rc := redisClient{}
 	rc.client = redis.NewClusterClient(&redis.ClusterOptions{
 		NewClient: func(opt *redis.Options) *redis.Client {
 			node := redis.NewClient(opt)
+			for _, hook := range hooks {
+				node.AddHook(hook)
+			}
 			return node
 		},
 		Addrs:        addrs,
@@ -174,44 +188,57 @@ func (rc *redisClient) Close() error {
 	return rc.client.Close()
 }
 
-func NewRedisClientByConfig(cfg env.ModuleConfig, redisDBKey string) (RedisClient, error) {
-	var redisConfig RedisClientOption
+func NewRedisClientByConfig(cfg env.ModuleConfig, marshaller string, tracer opentracing.Tracer) (RedisClient, error) {
+	var redisConfig *RedisClientOption
 
-	redisMode := getRedisMode(cfg, redisDBKey)
+	redisMode := getRedisMode(cfg)
 	switch redisMode {
 	case Single:
-		redisConfig = RedisClientOption{
+		redisConfig = &RedisClientOption{
 			Mode: Single,
-			Addr: cfg.GetString(redisDBKey + ".addr"),
-			Db:   cfg.GetInt(redisDBKey + ".db"),
+			Addr: cfg.GetString("addr"),
+			Db:   cfg.GetInt("db"),
 		}
 	case Cluster:
-		redisConfig = RedisClientOption{
+		redisConfig = &RedisClientOption{
 			Mode:                Cluster,
-			ClusterAddrs:        cfg.GetStringSlice(redisDBKey + ".addrs"),
-			ClusterMaxRedirects: cfg.GetInt(redisDBKey + ".maxredirects"),
-			ClusterReadOnly:     cfg.GetBool(redisDBKey + ".readonly"),
+			ClusterAddrs:        cfg.GetStringSlice("addrs"),
+			ClusterMaxRedirects: cfg.GetInt("maxredirects"),
+			ClusterReadOnly:     cfg.GetBool("readonly"),
 		}
 	default:
 		return nil, fmt.Errorf("%w: mode[%d]", ErrRedisConfigNotFound, redisMode)
 	}
 
 	// set common config
-	redisConfig.PoolSize = cfg.GetInt(redisDBKey + ".pool_size")
-	redisConfig.Password = cfg.GetString(redisDBKey + ".password")
-	redisConfig.ReadTimeout = time.Duration(cfg.GetInt(redisDBKey+".readtimeout")) * time.Second
+	redisConfig.PoolSize = cfg.GetInt("pool_size")
+	redisConfig.Password = cfg.GetString("password")
+	redisConfig.ReadTimeout = time.Duration(cfg.GetInt("readtimeout")) * time.Second
 
-	if cfg.GetString("db_marshaller") == "json" {
-		redisConfig.Marshaller = &JsonMarshaller{}
-	} else if cfg.GetString("db_marshaller") == "proto" {
-		redisConfig.Marshaller = &ProtoMarshaller{}
-	} else if cfg.GetString("db_marshaller") == "protocomp" {
-		redisConfig.Marshaller = &JsonMarshaller{}
+	if marshaller == gmarshaller.MarshallerTypeJSON {
+		redisConfig.Marshaller = &gmarshaller.JsonMarshaller{}
+	} else if marshaller == gmarshaller.MarshallerTypeProtoBuf {
+		redisConfig.Marshaller = &gmarshaller.ProtoMarshaller{}
+	} else if marshaller == gmarshaller.MarshallerTypeProtoBufComp {
+		redisConfig.Marshaller = &gmarshaller.ProtoCompressMarshaller{}
+	} else { // default marshal by json
+		marshaller = gmarshaller.MarshallerTypeJSON
+		redisConfig.Marshaller = &gmarshaller.JsonMarshaller{}
 	}
 
-	client, err := NewRedisClient(&redisConfig)
+	if tracer != nil {
+		// 增加 tracer hook
+		redisConfig.Hooks = append(redisConfig.Hooks, &TraceHook{
+			Tracer:     tracer,
+			Instance:   redisConfig.Addr,
+			RedisMode:  cfg.GetString("mode"),
+			Marshaller: marshaller,
+		})
+	}
+
+	client, err := NewRedisClient(redisConfig)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create gredis bot: %w, %s aaaaaaa", err, redisConfig.Addr)
+		return nil, fmt.Errorf("failed to create gredis client: %w, %s", err, redisConfig.Addr)
 	}
 
 	return client, nil
