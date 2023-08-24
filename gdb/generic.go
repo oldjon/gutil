@@ -10,6 +10,9 @@ type Generic interface {
 	Exists(ctx context.Context, key string) (bool, error)
 	TTL(ctx context.Context, key string) (time.Duration, error)
 	Del(ctx context.Context, key string) (uint32, error)
+	Expire(ctx context.Context, key string, expiration time.Duration) (bool, error)
+	ExpireAt(ctx context.Context, key string, t time.Time) (bool, error)
+	ExpireAtTS(ctx context.Context, key string, ts int64) (bool, error)
 }
 
 func (rc *redisClient) Del(ctx context.Context, key string) (uint32, error) {
@@ -53,8 +56,13 @@ func (rc *redisClient) Expire(ctx context.Context, key string, expiration time.D
 	return ret.Result()
 }
 
-func (rc *redisClient) ExpireAt(ctx context.Context, key string, t int64) (bool, error) {
-	tt := time.Unix(t, 0)
+func (rc *redisClient) ExpireAtTS(ctx context.Context, key string, ts int64) (bool, error) {
+	tt := time.Unix(ts, 0)
 	ret := rc.client.ExpireAt(ctx, key, tt)
+	return ret.Result()
+}
+
+func (rc *redisClient) ExpireAt(ctx context.Context, key string, t time.Time) (bool, error) {
+	ret := rc.client.ExpireAt(ctx, key, t)
 	return ret.Result()
 }
