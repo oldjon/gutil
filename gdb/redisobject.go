@@ -127,7 +127,7 @@ func (rc *redisClient) HSetObjects(ctx context.Context, key string, values ...an
 		case []any:
 			values = v
 		case map[string]any:
-			values = make([]any, 2*len(v))
+			values = make([]any, 0, 2*len(v))
 			for kk, vv := range v {
 				values = append(values, kk, vv)
 			}

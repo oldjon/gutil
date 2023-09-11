@@ -10,7 +10,7 @@ type DB struct {
 	RedisClient
 }
 
-func NewDAO(redisClient RedisClient) *DB {
+func NewDB(redisClient RedisClient) *DB {
 	return &DB{
 		ObjectDB:    redisClient,
 		RedisClient: redisClient,
