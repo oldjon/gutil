@@ -20,6 +20,7 @@ type String interface {
 	IncrBy(ctx context.Context, key string, value int64) (int64, error)
 	BatchGet(ctx context.Context, keys []string) ([]*redis.StringCmd, error)
 	BatchSet(ctx context.Context, keys []string, values []any, expiration time.Duration) error
+	BatchDel(ctx context.Context, keys []string) error
 }
 
 func (rc *redisClient) SetNX(ctx context.Context, key string, value any) (bool, error) {
@@ -74,6 +75,19 @@ func (rc *redisClient) BatchSet(ctx context.Context, keys []string, values []any
 	_, err := rc.client.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
 		for i, key := range keys {
 			pipeliner.Set(ctx, key, values[i], expiration)
+		}
+		return nil
+	})
+	return err
+}
+
+func (rc *redisClient) BatchDel(ctx context.Context, keys []string) error {
+	if len(keys) == 0 {
+		return nil
+	}
+	_, err := rc.client.Pipelined(ctx, func(pipeliner redis.Pipeliner) error {
+		for _, key := range keys {
+			pipeliner.Del(ctx, key)
 		}
 		return nil
 	})
