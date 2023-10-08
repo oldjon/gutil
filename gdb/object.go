@@ -18,7 +18,7 @@ type ObjectDB interface {
 	// GetObjects get datas from db of all keys, and unmarshal into objs.
 	// objs should be a slice of struct points, and slice should be memory allocated.
 	GetObjects(ctx context.Context, keys []string, objs any) error
-	// SetObjects set datas into db by keys, the datas is unmarshalled from objs.
+	// SetObjects set datas into db by keys, the datas is marshalled from objs.
 	// objs should be a slice.
 	SetObjects(ctx context.Context, keys []string, objs any) error
 	// SetObjectsEX set datas into db by keys with expiration, the datas is unmarshalled from objs.

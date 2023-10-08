@@ -239,6 +239,17 @@ func ToUint64Slice(values any, err error) ([]uint64, error) {
 			sl = append(sl, m, uint64(v.Score))
 		}
 		return sl, nil
+	case []string:
+		rv := values.([]string)
+		sl := make([]uint64, 0, len(rv))
+		for _, v := range rv {
+			m, err := toUint64(v)
+			if err != nil {
+				panic(PanicValueNotNum)
+			}
+			sl = append(sl, m)
+		}
+		return sl, nil
 	default:
 		return nil, ErrValueType
 	}
