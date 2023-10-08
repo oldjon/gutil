@@ -88,6 +88,9 @@ func (pcm *ProtoCompressMarshaller) Marshal(v interface{}) ([]byte, error) {
 	}
 
 	data, err = zstd.Compress(nil, data)
+	if err != nil {
+		return nil, ErrCompressBytesFailed
+	}
 	var newData = make([]byte, len(data)+1)
 	copy(newData[1:], data)
 	newData[0] = ProtoCompressFlagZstd

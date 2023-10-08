@@ -214,7 +214,9 @@ func NewRedisClientByConfig(cfg env.ModuleConfig, marshaller string, tracer open
 	redisConfig.PoolSize = cfg.GetInt("pool_size")
 	redisConfig.Password = cfg.GetString("password")
 	redisConfig.ReadTimeout = time.Duration(cfg.GetInt("readtimeout")) * time.Second
-
+	if cfg.GetString("db_marshaller") != "" {
+		marshaller = cfg.GetString("db_marshaller")
+	}
 	if marshaller == gmarshaller.MarshallerTypeJSON {
 		redisConfig.Marshaller = &gmarshaller.JsonMarshaller{}
 	} else if marshaller == gmarshaller.MarshallerTypeProtoBuf {
