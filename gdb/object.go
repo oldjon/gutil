@@ -6,6 +6,8 @@ import (
 )
 
 type ObjectDB interface {
+	SetKOMapping(map[string]string)
+	CheckKeyObjMatch(key string, obj any)
 	// GetObject get data from db of the key, and unmarshal into obj.
 	// obj should be a struct point, and should be memory allocated
 	GetObject(ctx context.Context, key string, obj any) error
@@ -68,4 +70,8 @@ type ObjectDB interface {
 	ZRevRankObject(ctx context.Context, key string, member any) (int64, error)
 	ZScoreObject(ctx context.Context, key string, member any) (float64, error)
 	ZRemObjects(ctx context.Context, key string, members ...any) (int64, error)
+}
+
+type KOMapping interface {
+	Mapping() map[string]string
 }

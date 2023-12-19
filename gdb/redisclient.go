@@ -119,9 +119,11 @@ func NewRedisClient(option *RedisClientOption) (RedisClient, error) {
 }
 
 type redisClient struct {
-	client        redis.UniversalClient // client would be a universal client to support single or ring or cluster
-	mode          string
+	client redis.UniversalClient // client would be a universal client to support single or ring or cluster
+	mode   string
+	// object
 	objMarshaller gmarshaller.Marshaller
+	koMapping     map[string]string
 }
 
 func getRedisMode(configReader env.ModuleConfig) Mode {

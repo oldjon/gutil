@@ -4,16 +4,43 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 )
+
+func (rc *redisClient) SetKOMapping(mapping map[string]string) {
+	rc.koMapping = make(map[string]string)
+	for k, v := range mapping {
+		if k == "" {
+			continue
+		}
+		k = strings.Split(k, ":")[0]
+		strs := strings.Split(v, ".")
+		rc.koMapping[k] = strs[len(strs)-1]
+	}
+}
+
+func (rc *redisClient) CheckKeyObjMatch(key string, obj any) { // panic if not match
+	key = strings.Split(key, ":")[0]
+	t, ok := rc.koMapping[key]
+	if !ok {
+		return
+	}
+	ot := reflect.TypeOf(obj).String()
+	strs := strings.Split(ot, ".")
+	if t != strs[len(strs)-1] {
+		panic("db key and db object type is not match") // if type is not match, means there is a bug in code
+	}
+}
 
 func (rc *redisClient) IsErrNil(err error) bool {
 	return errors.Is(err, redis.Nil)
 }
 
 func (rc *redisClient) GetObject(ctx context.Context, key string, obj any) error {
+	rc.CheckKeyObjMatch(key, obj)
 	v, err := rc.Get(ctx, key)
 	if err != nil {
 		return err
@@ -22,6 +49,7 @@ func (rc *redisClient) GetObject(ctx context.Context, key string, obj any) error
 }
 
 func (rc *redisClient) SetObject(ctx context.Context, key string, obj any) error {
+	rc.CheckKeyObjMatch(key, obj)
 	bys, err := rc.objMarshaller.Marshal(obj) //测试是否可以传nil指针
 	if err != nil {
 		return err
@@ -30,6 +58,7 @@ func (rc *redisClient) SetObject(ctx context.Context, key string, obj any) error
 }
 
 func (rc *redisClient) SetObjectEX(ctx context.Context, key string, obj any, expiration time.Duration) error {
+	rc.CheckKeyObjMatch(key, obj)
 	bys, err := rc.objMarshaller.Marshal(obj)
 	if err != nil {
 		return err
@@ -51,6 +80,7 @@ func (rc *redisClient) GetObjects(ctx context.Context, keys []string, objs any) 
 
 	var elemIsInterface bool
 	for i := 0; i < len(keys); i++ {
+		rc.CheckKeyObjMatch(keys[i], objsValue.Index(i).Interface())
 		if objsValue.Index(i).Kind() != reflect.Ptr && // input is slice of known struct type
 			objsValue.Index(i).Elem().Kind() != reflect.Ptr { // input is slice of interface
 			panic(PanicValueDstNeedBePointer)
@@ -112,7 +142,9 @@ func (rc *redisClient) SetObjectsEX(ctx context.Context, keys []string, objs any
 	var err error
 	datas := make([]any, objsValue.Len())
 	for i := 0; i < objsValue.Len(); i++ {
-		datas[i], err = rc.objMarshaller.Marshal(objsValue.Index(i).Interface())
+		objv := objsValue.Index(i).Interface()
+		rc.CheckKeyObjMatch(keys[i], objv)
+		datas[i], err = rc.objMarshaller.Marshal(objv)
 		if err != nil {
 			return err
 		}

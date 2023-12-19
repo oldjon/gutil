@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func Str2Uint32(str string) uint32 {
+func StrToUint32(str string) uint32 {
 	str = strings.ToLower(str)
 	if str == "-inf" {
 		return 0
@@ -17,7 +17,7 @@ func Str2Uint32(str string) uint32 {
 	return uint32(n)
 }
 
-func Str2Uint64(str string) uint64 {
+func StrToUint64(str string) uint64 {
 	str = strings.ToLower(str)
 	if str == "-inf" {
 		return 0
@@ -28,7 +28,7 @@ func Str2Uint64(str string) uint64 {
 	return n
 }
 
-func Str2Int32(str string) int32 {
+func StrToInt32(str string) int32 {
 	if str == "-inf" {
 		return math.MinInt32
 	} else if str == "+inf" || str == "inf" {
@@ -38,7 +38,7 @@ func Str2Int32(str string) int32 {
 	return int32(n)
 }
 
-func Str2Int64(str string) int64 {
+func StrToInt64(str string) int64 {
 	if str == "-inf" {
 		return math.MinInt64
 	} else if str == "+inf" || str == "inf" {
@@ -48,17 +48,17 @@ func Str2Int64(str string) int64 {
 	return n
 }
 
-func Str2Float32(str string) float32 {
+func StrToFloat32(str string) float32 {
 	n, _ := strconv.ParseFloat(str, 32)
 	return float32(n)
 }
 
-func Str2Float64(str string) float64 {
+func StrToFloat64(str string) float64 {
 	n, _ := strconv.ParseFloat(str, 64)
 	return n
 }
 
-func Str2Bool(str string) bool {
+func StrToBool(str string) bool {
 	str = strings.ToLower(str)
 	if str == "true" || str == "1" {
 		return true

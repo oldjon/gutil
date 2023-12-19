@@ -10,11 +10,17 @@ type DB struct {
 	RedisClient
 }
 
-func NewDB(redisClient RedisClient) *DB {
-	return &DB{
+func NewDB(redisClient RedisClient, koMapping KOMapping) *DB {
+	db := &DB{
 		ObjectDB:    redisClient,
 		RedisClient: redisClient,
 	}
+	if koMapping != nil {
+		db.ObjectDB.SetKOMapping(koMapping.Mapping())
+	} else {
+		db.ObjectDB.SetKOMapping(make(map[string]string))
+	}
+	return db
 }
 
 func (db *DB) GetObject(ctx context.Context, key string, obj any) error {
