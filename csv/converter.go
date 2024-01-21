@@ -65,3 +65,47 @@ func StrToBool(str string) bool {
 	}
 	return false
 }
+
+func StrToUint32Slice(str, sep string) []uint32 {
+	if str == "" {
+		return nil
+	}
+	var ret = make([]uint32, 0)
+	for _, v := range strings.Split(str, sep) {
+		ret = append(ret, StrToUint32(v))
+	}
+	return ret
+}
+
+func StrToUint64Slice(str, sep string) []uint64 {
+	if str == "" {
+		return nil
+	}
+	var ret = make([]uint64, 0)
+	for _, v := range strings.Split(str, sep) {
+		ret = append(ret, StrToUint64(v))
+	}
+	return ret
+}
+
+func StrToInt32Slice(str, sep string) []int32 {
+	if str == "" {
+		return nil
+	}
+	var ret = make([]int32, 0)
+	for _, v := range strings.Split(str, sep) {
+		ret = append(ret, StrToInt32(v))
+	}
+	return ret
+}
+
+func StrToInt64Slice(str, sep string) []int64 {
+	if str == "" {
+		return nil
+	}
+	var ret = make([]int64, 0)
+	for _, v := range strings.Split(str, sep) {
+		ret = append(ret, StrToInt64(v))
+	}
+	return ret
+}
