@@ -19,7 +19,7 @@ func GetNowTimeStr() string {
 	return TimeToDateTime(time.Now())
 }
 
-//GetNowDateStr string format "2006-01-02"
+// GetNowDateStr string format "2006-01-02"
 func GetNowDateStr() string {
 	return TimeToDate(time.Now())
 }
@@ -103,14 +103,14 @@ func ThisMondayXHourTimeUnix(addHour time.Duration) int64 {
 	return GetTimeUnix(t2)
 }
 
-//AddDateToTime add year,month and date
+// AddDateToTime add year,month and date
 func AddDateToTime(t int64, addYear int, addMonth int, addDate int) int64 {
 	ti := GetTimeFromUnix(t)
 	ti = ti.AddDate(addYear, addMonth, addDate)
 	return GetTimeUnix(ti)
 }
 
-//AddSecondToNowTime add seconds to now time
+// AddSecondToNowTime add seconds to now time
 func AddSecondToNowTime(addSecs int) string {
 	now := time.Now()
 	newTime := now.Add(time.Second * time.Duration(addSecs))
@@ -150,28 +150,42 @@ func DateStrToTimeUnix(d string) int64 {
 }
 
 // DateTimeStrToTime string format "2006-01-02 15:04:05"
-func DateTimeStrToTime(dt string) time.Time {
-	t, _ := time.ParseInLocation("2006-01-02 15:04:05", dt, time.Local)
+func DateTimeStrToTime(dt string, locationStr string) time.Time {
+	var location = time.Local
+	if locationStr != "" {
+		location, _ = time.LoadLocation(locationStr)
+	}
+	t, _ := time.ParseInLocation("2006-01-02 15:04:05", dt, location)
 	return t
 }
 
 // DateTimeStrToTimeUnix string format "2006-01-02 15:04:05" to timestamp
-func DateTimeStrToTimeUnix(dt string) int64 {
+func DateTimeStrToTimeUnix(dt string, locationStr string) int64 {
 	if dt == "" {
 		return 0
 	}
-
-	t, _ := time.ParseInLocation("2006-01-02 15:04:05", dt, time.Local)
+	var location = time.Local
+	if locationStr != "" {
+		location, _ = time.LoadLocation(locationStr)
+	}
+	t, _ := time.ParseInLocation("2006-01-02 15:04:05", dt, location)
 	return t.Unix()
 }
 
 // DateTimeStrToTimeUnix string format "2006-01-02 15:04:05" to timestamp
-func DateTimeStrToTimeUnixWithErr(dt string) (int64, error) {
+func DateTimeStrToTimeUnixWithErr(dt string, locationStr string) (int64, error) {
 	if dt == "" {
 		return 0, nil
 	}
-
-	t, err := time.ParseInLocation("2006-01-02 15:04:05", dt, time.Local)
+	var location = time.Local
+	var err error
+	if locationStr != "" {
+		location, err = time.LoadLocation(locationStr)
+		if err != nil {
+			return 0, err
+		}
+	}
+	t, err := time.ParseInLocation("2006-01-02 15:04:05", dt, location)
 	if err != nil {
 		return 0, err
 	}
@@ -187,10 +201,10 @@ func IsWeekend(t time.Time) bool {
 	return false
 }
 
-//LastRegionWeekRefreshTime return the last refresh time for the event's refresh weekly based on region
-//For exmaple, if the refresh time is Monday 08:00 in each region and check region is -0500 EST
-//If t is 2018-04-02 12:59 0000 UTC which is 2018-04-02 07:59 -0500 EST would return 2018-03-26 08:00 -0500 EST
-//If t is 2018-04-02 13:01 0000 UTC which is 2018-04-02 08:01 -0500 EST would return 2018-04-02 08:00 -0500 EST
+// LastRegionWeekRefreshTime return the last refresh time for the event's refresh weekly based on region
+// For exmaple, if the refresh time is Monday 08:00 in each region and check region is -0500 EST
+// If t is 2018-04-02 12:59 0000 UTC which is 2018-04-02 07:59 -0500 EST would return 2018-03-26 08:00 -0500 EST
+// If t is 2018-04-02 13:01 0000 UTC which is 2018-04-02 08:01 -0500 EST would return 2018-04-02 08:00 -0500 EST
 func LastRegionWeekRefreshTime(t time.Time, refreshDay time.Weekday, refreshHour int, refreshMinutes int, region *time.Location) time.Time {
 	tt := t.In(region)
 	weekday := tt.Weekday()
