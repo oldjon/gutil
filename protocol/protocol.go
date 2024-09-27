@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"compress/zlib"
 	"errors"
-	gmarshaller "github.com/oldjon/gutil/marshaller"
 	"io"
+
+	gmarshaller "github.com/oldjon/gutil/marshaller"
 )
 
 const (
