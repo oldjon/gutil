@@ -64,7 +64,7 @@ type RedisClient interface {
 	Hash
 	SortedSet
 	ObjectDB
-	Eval
+	Scripter
 	Pipeline() Pipeliner
 	TxPipeline() Pipeliner
 }
