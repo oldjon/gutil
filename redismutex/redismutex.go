@@ -3,13 +3,12 @@ package grmux
 import (
 	"context"
 	"errors"
-	"github.com/opentracing/opentracing-go"
 	"math/rand"
 	"time"
 
 	"github.com/oldjon/gutil/env"
 	"github.com/oldjon/gutil/gdb"
-
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 )
 

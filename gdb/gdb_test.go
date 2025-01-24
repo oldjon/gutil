@@ -6,13 +6,14 @@ import (
 )
 
 func newRedisClient(t *testing.T) RedisClient {
-	addr := "127.0.0.1:6101"
+	addr := "192.168.221.129:6001"
 	op := &RedisClientOption{
 		Addr:       addr,
 		Marshaller: &gmarshaller.JsonMarshaller{},
 	}
 	client, err := NewRedisClient(op)
 	if err != nil {
+		t.Errorf("newRedisClient %v", err)
 		t.Failed()
 	}
 	return client

@@ -16,8 +16,11 @@ type Bar struct {
 
 func TestHSetObjects(t *testing.T) {
 	client := newRedisClient(t)
+	if client == nil {
+		t.Errorf("newRedisClient failed")
+		return
+	}
 	ctx := context.Background()
-
 	err := client.HSetObjects(ctx, "TestHSetObjects", "f1", &Foo{1}, "f2", &Bar{2})
 	if err != nil {
 		t.Errorf("hsetobjects failed: %v", err)
@@ -26,6 +29,10 @@ func TestHSetObjects(t *testing.T) {
 
 func TestHMGetObjects(t *testing.T) {
 	client := newRedisClient(t)
+	if client == nil {
+		t.Errorf("newRedisClient failed")
+		return
+	}
 	ctx := context.Background()
 
 	err := client.HSetObjects(ctx, "TestHMGetObjects", "f1", &Foo{1}, "f2", &Bar{2})
@@ -72,8 +79,11 @@ func TestHMGetObjects(t *testing.T) {
 
 func TestZRangeObjects(t *testing.T) {
 	client := newRedisClient(t)
+	if client == nil {
+		t.Errorf("newRedisClient failed")
+		return
+	}
 	ctx := context.Background()
-
 	// dst is slice of interface
 	var dst = make([]any, 4)
 	dst[0] = 1
