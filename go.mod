@@ -8,11 +8,13 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/golang/glog v1.2.2
-	google.golang.org/protobuf v1.34.2
+	github.com/golang/protobuf v1.5.3
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/spf13/cast v1.7.0
 	github.com/spf13/viper v1.19.0
 	go.uber.org/zap v1.27.0
+	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
+	gopkg.in/natefinch/lumberjack.v2 v2.2.1
 )
 
 require (
@@ -29,7 +31,6 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
-	golang.org/x/exp v0.0.0-20230905200255-921286631fa9 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect

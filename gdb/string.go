@@ -11,8 +11,7 @@ import (
 )
 
 type String interface {
-	SetNX(ctx context.Context, key string, value any) (bool, error)
-	SetEXNX(ctx context.Context, key string, value any, expiration time.Duration) (bool, error)
+	SetNX(ctx context.Context, key string, value any, expiration time.Duration) (bool, error)
 	Set(ctx context.Context, key string, value any) error
 	SetEX(ctx context.Context, key string, value any, expiration time.Duration) error
 	Get(ctx context.Context, key string) (string, error)
@@ -23,11 +22,7 @@ type String interface {
 	BatchDel(ctx context.Context, keys []string) error
 }
 
-func (rc *redisClient) SetNX(ctx context.Context, key string, value any) (bool, error) {
-	return rc.SetEXNX(ctx, key, value, 0)
-}
-
-func (rc *redisClient) SetEXNX(ctx context.Context, key string, value any, expiration time.Duration) (bool, error) {
+func (rc *redisClient) SetNX(ctx context.Context, key string, value any, expiration time.Duration) (bool, error) {
 	return rc.client.SetNX(ctx, key, value, expiration).Result()
 }
 

@@ -5,8 +5,9 @@ import (
 )
 
 var (
-	ErrValue     = errors.New("ERR_VALUE")
-	ErrValueType = errors.New("ERR_VALUE_TYPE")
+	ErrValue       = errors.New("ERR_VALUE")
+	ErrValueType   = errors.New("ERR_VALUE_TYPE")
+	ErrScriptIsNil = errors.New("ERR_SCRIPT_IS_NIL")
 )
 
 var (
