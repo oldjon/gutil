@@ -48,7 +48,7 @@ func (rc *redisClient) EvalSha(ctx context.Context, s *Script, keys []string, ar
 	if cmd.Err() == nil {
 		return cmd
 	}
-	if strings.HasPrefix(cmd.Err().Error(), "NOSCRIPT ") {
+	if strings.HasPrefix(cmd.Err().Error(), "NOSCRIPT") {
 		return rc.client.Eval(ctx, s.src, keys, args...)
 	}
 	return cmd
